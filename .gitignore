@@ -1,0 +1,10 @@
+node_modules/
+.env
+__pycache__/
+*.pyc
+backend/uploads/*
+!backend/uploads/.gitkeep
+ml-service/models/*.pkl
+ml-service/models/*.joblib
+frontend/dist/
+.vscode/
