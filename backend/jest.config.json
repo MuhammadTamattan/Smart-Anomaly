@@ -1,0 +1,13 @@
+{
+  "testEnvironment": "node",
+  "testMatch": ["**/tests/**/*.test.js"],
+  "transform": {
+    "^.+\\.js$": "@swc/jest"
+  },
+  "transformIgnorePatterns": [],
+  "testTimeout": 60000,
+  "forceExit": true,
+  "detectOpenHandles": true,
+  "verbose": true,
+  "setupFiles": ["./tests/jest-env.js"]
+}

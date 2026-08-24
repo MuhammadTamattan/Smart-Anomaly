@@ -1,81 +1,5 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useCallback, useMemo } from 'react';
 import './Dashboard.css';
-
-const menuItems = [
-  {
-    label: 'Dashboard',
-    path: '/dashboard',
-    tooltip: 'System Overview',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Log Upload',
-    path: '/log-upload',
-    tooltip: 'Upload Security Logs',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-        <polyline points="17 8 12 3 7 8" />
-        <line x1="12" y1="3" x2="12" y2="15" />
-      </svg>
-    ),
-  },
-  {
-    label: 'ML Analysis',
-    path: '/ml-analysis',
-    tooltip: 'AI Threat Detection',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z" />
-        <circle cx="12" cy="15" r="2" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Alerts',
-    path: '/alerts',
-    tooltip: 'Active Security Incidents',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Reports',
-    path: '#',
-    tooltip: 'Analytics & Reports',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Settings',
-    path: '#',
-    tooltip: 'Platform Configuration',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-      </svg>
-    ),
-  },
-];
 
 const statCards = [
   {
@@ -279,36 +203,6 @@ const Gauge = ({ value, max = 100, label }) => {
 };
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [activeMenu, setActiveMenu] = useState('Dashboard');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [feedOffset, setFeedOffset] = useState(0);
-  const mainRef = useRef(null);
-  const feedRef = useRef(null);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  const handleMouseMove = useCallback((e) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [handleMouseMove]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFeedOffset((prev) => prev + 1);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
   const handleCardMouseMove = useCallback((e) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -366,347 +260,245 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-bg">
-        <div className="dash-orb dash-orb-1" />
-        <div className="dash-orb dash-orb-2" />
-        <div className="dash-orb dash-orb-3" />
-        <div className="dash-grid" />
-        <div className="dash-particles">
-          {[...Array(15)].map((_, i) => (
-            <div key={i} className="dash-particle" style={{
-              left: `${(i * 67 + 13) % 100}%`,
-              top: `${(i * 43 + 7) % 100}%`,
-              animationDelay: `${(i * 1.3) % 20}s`,
-              animationDuration: `${15 + (i * 2.7) % 25}s`,
-            }} />
-          ))}
-        </div>
-        <div className="dash-connections">
-          <svg width="100%" height="100%" viewBox="0 0 1920 1080" preserveAspectRatio="none">
-            <line x1="100" y1="200" x2="400" y2="350" className="conn-line" style={{ animationDelay: '0s' }} />
-            <line x1="400" y1="350" x2="750" y2="180" className="conn-line" style={{ animationDelay: '2s' }} />
-            <line x1="750" y1="180" x2="1100" y2="420" className="conn-line" style={{ animationDelay: '4s' }} />
-            <line x1="1100" y1="420" x2="1500" y2="250" className="conn-line" style={{ animationDelay: '1s' }} />
-            <line x1="1500" y1="250" x2="1800" y2="500" className="conn-line" style={{ animationDelay: '3s' }} />
-            <line x1="200" y1="700" x2="550" y2="850" className="conn-line" style={{ animationDelay: '5s' }} />
-            <line x1="550" y1="850" x2="900" y2="650" className="conn-line" style={{ animationDelay: '2.5s' }} />
-            <line x1="900" y1="650" x2="1300" y2="800" className="conn-line" style={{ animationDelay: '1.5s' }} />
-            <line x1="1300" y1="800" x2="1700" y2="600" className="conn-line" style={{ animationDelay: '3.5s' }} />
+    <div className="dashboard-content">
+      <div className="main-header">
+        <h1>Security Operations Center</h1>
+        <p className="main-subtitle">Real-time threat monitoring and intelligent analysis</p>
+        <span className="main-timestamp">{timestamp}</span>
+      </div>
+
+      <div className="stats-grid">
+        {statCards.map((card, index) => (
+          <div
+            key={card.label}
+            className="stat-card"
+            style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
+          >
+            <div className="stat-card-glow" style={{ background: card.color }} />
+            <div className="stat-icon-wrap" style={{ background: `${card.color}18`, color: card.color }}>
+              {card.icon}
+            </div>
+            <div className="stat-info">
+              <span className="stat-label">{card.label}</span>
+              <h3>{card.value}</h3>
+              <span className="stat-sub">{card.sub}</span>
+              <span className={`stat-change ${card.positive ? 'positive' : 'negative'}`}>
+                {card.change}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="charts-row">
+        <div className="chart-card threat-trend">
+          <div className="chart-header">
+            <h2>Threat Trend</h2>
+            <span>Last 30 days</span>
+          </div>
+          <svg className="line-svg" viewBox={`0 0 ${lineChartData.w} ${lineChartData.h}`}>
+            <defs>
+              <linearGradient id="lineAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <line key={i} x1="10" y1={10 + i * 45} x2="590" y2={10 + i * 45} stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+            ))}
+            <path className="line-area" d={lineChartData.areaPath} fill="url(#lineAreaGrad)" />
+            <path className="line-path" d={lineChartData.linePath} fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            {lineChartData.points.map((p, i) => (
+              <circle key={i} className="line-dot" cx={p.x} cy={p.y} r="3" fill="#6366f1" stroke="#0a0a1a" strokeWidth="1.5" />
+            ))}
           </svg>
+        </div>
+
+        <div className="chart-card severity-chart">
+          <div className="chart-header">
+            <h2>Severity Distribution</h2>
+            <span>Current quarter</span>
+          </div>
+          <div className="severity-chart-body">
+            <svg className="donut-svg" viewBox="0 0 200 200">
+              {donutData.segments.map((seg, i) => (
+                <circle
+                  key={i}
+                  className="donut-segment"
+                  cx="100"
+                  cy="100"
+                  r={donutData.r}
+                  fill="none"
+                  stroke={seg.color}
+                  strokeWidth="24"
+                  strokeDasharray={`${seg.dash} ${donutData.circumference - seg.dash}`}
+                  strokeDashoffset={seg.offset}
+                  strokeLinecap="butt"
+                />
+              ))}
+              <text x="100" y="95" textAnchor="middle" fill="#f1f5f9" fontSize="28" fontWeight="700">
+                {donutData.total}
+              </text>
+              <text x="100" y="115" textAnchor="middle" fill="rgba(148,163,184,0.7)" fontSize="11">
+                Total Alerts
+              </text>
+            </svg>
+            <div className="donut-legend">
+              {donutData.segments.map((seg) => (
+                <div key={seg.label} className="legend-item">
+                  <span className="legend-dot" style={{ background: seg.color }} />
+                  <span>{seg.label}</span>
+                  <span>{seg.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="mouse-glow" style={{ left: mousePos.x, top: mousePos.y }} />
-
-      <nav className="dashboard-navbar">
-        <div className="navbar-left">
-          <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
-          <div className="navbar-brand">
-            <div className="navbar-logo">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="M9 12l2 2 4-4" />
-              </svg>
+      <div className="bottom-grid">
+        <div className="bottom-left">
+          <section className="activity-section">
+            <div className="section-header">
+              <h2>Recent Activity</h2>
+              <span className="section-badge">Live</span>
             </div>
-            <span className="navbar-title">Smart Anomaly Detection & Alert System</span>
-          </div>
-        </div>
-        <div className="navbar-right">
-          <div className="status-indicator">
-            <span className="status-dot" />
-            <span>Operational</span>
-          </div>
-          <div className="navbar-user">
-            <div className="user-avatar">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            </div>
-            <span className="user-name">{user?.name || 'User'}</span>
-          </div>
-          <button onClick={handleLogout} className="logout-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            Logout
-          </button>
-        </div>
-      </nav>
-
-      <div className="dashboard-body">
-        <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : ''}`}>
-          <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
-          <nav className="sidebar-nav">
-            {menuItems.map((item, index) => (
-              <button
-                key={item.label}
-                className={`sidebar-item ${activeMenu === item.label ? 'active' : ''}`}
-                style={{ animationDelay: `${index * 0.06}s` }}
-                onClick={() => {
-                  setActiveMenu(item.label);
-                  setSidebarOpen(false);
-                  if (item.path && item.path !== '#') navigate(item.path);
-                }}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-                <span className="sidebar-tooltip">{item.tooltip}</span>
-              </button>
-            ))}
-          </nav>
-        </aside>
-
-        <main className="dashboard-main" ref={mainRef}>
-          <div className="main-header">
-            <h1>Security Operations Center</h1>
-            <p className="main-subtitle">Real-time threat monitoring and intelligent analysis</p>
-            <span className="main-timestamp">{timestamp}</span>
-          </div>
-
-          <div className="stats-grid">
-            {statCards.map((card, index) => (
-              <div
-                key={card.label}
-                className="stat-card"
-                style={{ animationDelay: `${0.1 + index * 0.1}s` }}
-                onMouseMove={handleCardMouseMove}
-                onMouseLeave={handleCardMouseLeave}
-              >
-                <div className="stat-card-glow" style={{ background: card.color }} />
-                <div className="stat-icon-wrap" style={{ background: `${card.color}18`, color: card.color }}>
-                  {card.icon}
+            <div className="timeline">
+              {recentActivity.map((item, index) => (
+                <div key={item.id} className="timeline-item" style={{ animationDelay: `${0.3 + index * 0.08}s` }}>
+                  <div className="timeline-marker">
+                    <span className={`timeline-dot ${item.type}`} />
+                    {index < recentActivity.length - 1 && <span className="timeline-line" />}
+                  </div>
+                  <div className="timeline-content">
+                    <p>{item.event}</p>
+                    <span className="timeline-time">{item.time}</span>
+                  </div>
                 </div>
-                <div className="stat-info">
-                  <span className="stat-label">{card.label}</span>
-                  <h3>{card.value}</h3>
-                  <span className="stat-sub">{card.sub}</span>
-                  <span className={`stat-change ${card.positive ? 'positive' : 'negative'}`}>
-                    {card.change}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="charts-row">
-            <div className="chart-card threat-trend">
-              <div className="chart-header">
-                <h2>Threat Trend</h2>
-                <span>Last 30 days</span>
-              </div>
-              <svg className="line-svg" viewBox={`0 0 ${lineChartData.w} ${lineChartData.h}`}>
-                <defs>
-                  <linearGradient id="lineAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <line key={i} x1="10" y1={10 + i * 45} x2="590" y2={10 + i * 45} stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-                ))}
-                <path className="line-area" d={lineChartData.areaPath} fill="url(#lineAreaGrad)" />
-                <path className="line-path" d={lineChartData.linePath} fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                {lineChartData.points.map((p, i) => (
-                  <circle key={i} className="line-dot" cx={p.x} cy={p.y} r="3" fill="#6366f1" stroke="#0a0a1a" strokeWidth="1.5" />
-                ))}
-              </svg>
+              ))}
             </div>
+          </section>
 
-            <div className="chart-card severity-chart">
-              <div className="chart-header">
-                <h2>Severity Distribution</h2>
-                <span>Current quarter</span>
-              </div>
-              <div className="severity-chart-body">
-                <svg className="donut-svg" viewBox="0 0 200 200">
-                  {donutData.segments.map((seg, i) => (
-                    <circle
-                      key={i}
-                      className="donut-segment"
-                      cx="100"
-                      cy="100"
-                      r={donutData.r}
-                      fill="none"
-                      stroke={seg.color}
-                      strokeWidth="24"
-                      strokeDasharray={`${seg.dash} ${donutData.circumference - seg.dash}`}
-                      strokeDashoffset={seg.offset}
-                      strokeLinecap="butt"
-                    />
-                  ))}
-                  <text x="100" y="95" textAnchor="middle" fill="#f1f5f9" fontSize="28" fontWeight="700">
-                    {donutData.total}
-                  </text>
-                  <text x="100" y="115" textAnchor="middle" fill="rgba(148,163,184,0.7)" fontSize="11">
-                    Total Alerts
-                  </text>
+          <section className="widget-card threat-feed-widget">
+            <div className="chart-header">
+              <h2>Live Threat Feed</h2>
+              <span className="section-badge">Live</span>
+            </div>
+            <div className="feed-list">
+              {threatFeed.map((item) => (
+                <div key={item.id} className="feed-item">
+                  <span className="feed-time">{item.time}</span>
+                  <span className={`feed-severity ${item.severity}`}>{item.severity}</span>
+                  <span className="feed-source">{item.source}</span>
+                  <span className="feed-event">{item.event}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <div className="bottom-right">
+          <section className="widget-card ai-assistant">
+            <div className="ai-header">
+              <div className="ai-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z" />
+                  <circle cx="12" cy="15" r="2" />
                 </svg>
-                <div className="donut-legend">
-                  {donutData.segments.map((seg) => (
-                    <div key={seg.label} className="legend-item">
-                      <span className="legend-dot" style={{ background: seg.color }} />
-                      <span>{seg.label}</span>
-                      <span>{seg.value}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
+              <div>
+                <h3>AI Guardian</h3>
+                <span className="ai-status"><span className="ai-online" /> Online</span>
+              </div>
+              <span className="ai-confidence">97.3% confidence</span>
             </div>
+            <div className="ai-messages">
+              {aiMessages.map((msg) => (
+                <div key={msg.id} className={`ai-msg ${msg.type}`}>
+                  <p>{msg.text}</p>
+                </div>
+              ))}
+            </div>
+            <div className="ai-typing">
+              <span className="typing-dot" style={{ animationDelay: '0s' }} />
+              <span className="typing-dot" style={{ animationDelay: '0.2s' }} />
+              <span className="typing-dot" style={{ animationDelay: '0.4s' }} />
+            </div>
+          </section>
+
+          <section className="widget-card attack-types">
+            <div className="chart-header">
+              <h2>Attack Types</h2>
+              <span>This session</span>
+            </div>
+            <div className="attack-bars">
+              {attackTypes.map((item) => (
+                <div key={item.label} className="attack-bar-row">
+                  <span className="attack-label">{item.label}</span>
+                  <div className="attack-bar-track">
+                    <div
+                      className="attack-bar-fill"
+                      style={{ width: `${(item.value / item.max) * 100}%` }}
+                    />
+                  </div>
+                  <span className="attack-value">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="widget-row">
+            <section className="widget-card system-health">
+              <div className="chart-header">
+                <h2>System Health</h2>
+              </div>
+              <div className="health-circles">
+                <CircularProgress value={99.9} size={72} strokeWidth={5} color="#10b981" label="CPU" />
+                <CircularProgress value={87.3} size={72} strokeWidth={5} color="#3b82f6" label="Memory" />
+                <CircularProgress value={64.8} size={72} strokeWidth={5} color="#8b5cf6" label="Disk" />
+                <CircularProgress value={92.1} size={72} strokeWidth={5} color="#06b6d4" label="Network" />
+              </div>
+            </section>
+
+            <section className="widget-card confidence-gauge">
+              <div className="chart-header">
+                <h2>ML Confidence</h2>
+              </div>
+              <Gauge value={97.3} max={100} label="Model Accuracy" />
+            </section>
           </div>
 
-          <div className="bottom-grid">
-            <div className="bottom-left">
-              <section className="activity-section">
-                <div className="section-header">
-                  <h2>Recent Activity</h2>
-                  <span className="section-badge">Live</span>
-                </div>
-                <div className="timeline">
-                  {recentActivity.map((item, index) => (
-                    <div key={item.id} className="timeline-item" style={{ animationDelay: `${0.3 + index * 0.08}s` }}>
-                      <div className="timeline-marker">
-                        <span className={`timeline-dot ${item.type}`} />
-                        {index < recentActivity.length - 1 && <span className="timeline-line" />}
-                      </div>
-                      <div className="timeline-content">
-                        <p>{item.event}</p>
-                        <span className="timeline-time">{item.time}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section className="widget-card threat-feed-widget">
-                <div className="chart-header">
-                  <h2>Live Threat Feed</h2>
-                  <span className="section-badge">Live</span>
-                </div>
-                <div className="feed-list" ref={feedRef}>
-                  {threatFeed.map((item) => (
-                    <div key={item.id} className="feed-item">
-                      <span className="feed-time">{item.time}</span>
-                      <span className={`feed-severity ${item.severity}`}>{item.severity}</span>
-                      <span className="feed-source">{item.source}</span>
-                      <span className="feed-event">{item.event}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
+          <section className="widget-card login-attempts">
+            <div className="chart-header">
+              <h2>Recent Logins</h2>
+              <span>Last hour</span>
             </div>
-
-            <div className="bottom-right">
-              <section className="widget-card ai-assistant">
-                <div className="ai-header">
-                  <div className="ai-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z" />
-                      <circle cx="12" cy="15" r="2" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3>AI Guardian</h3>
-                    <span className="ai-status"><span className="ai-online" /> Online</span>
-                  </div>
-                  <span className="ai-confidence">97.3% confidence</span>
-                </div>
-                <div className="ai-messages">
-                  {aiMessages.map((msg) => (
-                    <div key={msg.id} className={`ai-msg ${msg.type}`}>
-                      <p>{msg.text}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="ai-typing">
-                  <span className="typing-dot" style={{ animationDelay: '0s' }} />
-                  <span className="typing-dot" style={{ animationDelay: '0.2s' }} />
-                  <span className="typing-dot" style={{ animationDelay: '0.4s' }} />
-                </div>
-              </section>
-
-              <section className="widget-card attack-types">
-                <div className="chart-header">
-                  <h2>Attack Types</h2>
-                  <span>This session</span>
-                </div>
-                <div className="attack-bars">
-                  {attackTypes.map((item) => (
-                    <div key={item.label} className="attack-bar-row">
-                      <span className="attack-label">{item.label}</span>
-                      <div className="attack-bar-track">
-                        <div
-                          className="attack-bar-fill"
-                          style={{ width: `${(item.value / item.max) * 100}%` }}
-                        />
-                      </div>
-                      <span className="attack-value">{item.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <div className="widget-row">
-                <section className="widget-card system-health">
-                  <div className="chart-header">
-                    <h2>System Health</h2>
-                  </div>
-                  <div className="health-circles">
-                    <CircularProgress value={99.9} size={72} strokeWidth={5} color="#10b981" label="CPU" />
-                    <CircularProgress value={87.3} size={72} strokeWidth={5} color="#3b82f6" label="Memory" />
-                    <CircularProgress value={64.8} size={72} strokeWidth={5} color="#8b5cf6" label="Disk" />
-                    <CircularProgress value={92.1} size={72} strokeWidth={5} color="#06b6d4" label="Network" />
-                  </div>
-                </section>
-
-                <section className="widget-card confidence-gauge">
-                  <div className="chart-header">
-                    <h2>ML Confidence</h2>
-                  </div>
-                  <Gauge value={97.3} max={100} label="Model Accuracy" />
-                </section>
-              </div>
-
-              <section className="widget-card login-attempts">
-                <div className="chart-header">
-                  <h2>Recent Logins</h2>
-                  <span>Last hour</span>
-                </div>
-                <table className="login-table">
-                  <thead>
-                    <tr className="login-header-row">
-                      <th>User</th>
-                      <th>IP Address</th>
-                      <th>Status</th>
-                      <th>Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loginAttempts.map((row, i) => (
-                      <tr key={i} className="login-row">
-                        <td>{row.user}</td>
-                        <td>{row.ip}</td>
-                        <td>
-                          <span className={`login-status ${row.status}`}>{row.status}</span>
-                        </td>
-                        <td>{row.time}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </section>
-            </div>
-          </div>
-        </main>
+            <table className="login-table">
+              <thead>
+                <tr className="login-header-row">
+                  <th>User</th>
+                  <th>IP Address</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loginAttempts.map((row, i) => (
+                  <tr key={i} className="login-row">
+                    <td>{row.user}</td>
+                    <td>{row.ip}</td>
+                    <td>
+                      <span className={`login-status ${row.status}`}>{row.status}</span>
+                    </td>
+                    <td>{row.time}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        </div>
       </div>
     </div>
   );

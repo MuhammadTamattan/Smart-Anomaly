@@ -5,8 +5,8 @@ import axios from 'axios';
 import Log from '../models/Log.js';
 import Alert from '../models/Alert.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const currentFilename = fileURLToPath(import.meta.url);
+const currentDir = path.dirname(currentFilename);
 
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
 
@@ -27,6 +27,59 @@ const severityMap = {
   none: 'low',
 };
 
+const evaluateSecurityConditions = (featureImp, mlResult) => {
+  const indicators = [];
+
+  if (featureImp.failed_auth > 3) {
+    indicators.push(`${Math.round(featureImp.failed_auth)} authentication failure(s) detected`);
+  }
+  if (featureImp.sql_keywords > 3) {
+    indicators.push(`${Math.round(featureImp.sql_keywords)} SQL keywords found (possible injection attempt)`);
+  }
+  if (featureImp.shell_keywords > 1) {
+    indicators.push(`${Math.round(featureImp.shell_keywords)} shell command(s) detected`);
+  }
+  if (featureImp.port_scan > 0) {
+    indicators.push('Port scanning activity detected');
+  }
+  if (featureImp.error_count > 3) {
+    indicators.push(`${Math.round(featureImp.error_count)} errors found in log`);
+  }
+  if (featureImp.unique_ips > 20) {
+    indicators.push(`${Math.round(featureImp.unique_ips)} unique source IPs (possible distributed activity)`);
+  }
+  if (featureImp.rate_limit_hits > 3) {
+    indicators.push(`${Math.round(featureImp.rate_limit_hits)} rate limit event(s) detected`);
+  }
+  if (featureImp.connection_resets > 2) {
+    indicators.push(`${Math.round(featureImp.connection_resets)} connection reset(s) detected`);
+  }
+  if (featureImp.timeout_count > 5) {
+    indicators.push(`${Math.round(featureImp.timeout_count)} timeout event(s) detected`);
+  }
+
+  let alertType = 'anomaly_detected';
+  if (featureImp.failed_auth > 3) alertType = 'brute_force';
+  else if (featureImp.sql_keywords > 3) alertType = 'sql_injection';
+  else if (featureImp.port_scan > 0) alertType = 'port_scan';
+  else if (featureImp.error_count > 3) alertType = 'high_error_rate';
+  else if (featureImp.shell_keywords > 1 || featureImp.unique_ips > 20) alertType = 'suspicious_activity';
+
+  const hasSecurityIndicators = indicators.length > 0;
+  const hasHighAnomalyScore = mlResult.anomaly_score < -0.3;
+  const hasCriticalSeverity = mlResult.severity === 'critical';
+  const shouldCreateAlert = mlResult.is_anomaly || hasSecurityIndicators || hasHighAnomalyScore || hasCriticalSeverity;
+
+  return {
+    indicators,
+    alertType,
+    hasSecurityIndicators,
+    hasHighAnomalyScore,
+    hasCriticalSeverity,
+    shouldCreateAlert,
+  };
+};
+
 export const analyzeLog = async (req, res, next) => {
   try {
     const log = await Log.findById(req.params.id);
@@ -44,43 +97,35 @@ export const analyzeLog = async (req, res, next) => {
 
       if (!existingAlert) {
         const cachedImp = log.analysisResult?.feature_importance || {};
-        const cachedIndicators = [];
+        const cachedMlResult = {
+          is_anomaly: log.isAnomaly,
+          anomaly_score: log.anomalyScore,
+          severity: log.severity,
+        };
+        const cachedEval = evaluateSecurityConditions(cachedImp, cachedMlResult);
 
-        if (cachedImp.failed_auth > 3) cachedIndicators.push(`${Math.round(cachedImp.failed_auth)} authentication failure(s) detected`);
-        if (cachedImp.sql_keywords > 5) cachedIndicators.push(`${Math.round(cachedImp.sql_keywords)} SQL keywords found (possible injection attempt)`);
-        if (cachedImp.shell_keywords > 2) cachedIndicators.push(`${Math.round(cachedImp.shell_keywords)} shell command(s) detected`);
-        if (cachedImp.port_scan > 0) cachedIndicators.push('Port scanning activity detected');
-        if (cachedImp.error_count > 10) cachedIndicators.push(`${Math.round(cachedImp.error_count)} errors found in log`);
-        if (cachedImp.unique_ips > 20) cachedIndicators.push(`${Math.round(cachedImp.unique_ips)} unique source IPs (possible distributed activity)`);
-        if (cachedImp.rate_limit_hits > 3) cachedIndicators.push(`${Math.round(cachedImp.rate_limit_hits)} rate limit event(s) detected`);
-        if (cachedImp.connection_resets > 3) cachedIndicators.push(`${Math.round(cachedImp.connection_resets)} connection reset(s) detected`);
+        console.log('[ML ANALYSIS] Retroactive evaluation for already-analyzed log:', log._id);
+        console.log('[ML ANALYSIS] is_anomaly:', cachedMlResult.is_anomaly, '| score:', cachedMlResult.anomaly_score, '| severity:', cachedMlResult.severity);
+        console.log('[ML ANALYSIS] Indicators:', cachedEval.indicators.length, cachedEval.indicators);
+        console.log('[ML ANALYSIS] shouldCreateAlert:', cachedEval.shouldCreateAlert);
 
-        let cachedType = 'anomaly_detected';
-        if (cachedImp.failed_auth > 3) cachedType = 'brute_force';
-        else if (cachedImp.sql_keywords > 5) cachedType = 'sql_injection';
-        else if (cachedImp.port_scan > 0) cachedType = 'port_scan';
-        else if (cachedImp.error_count > 20) cachedType = 'high_error_rate';
-        else if (cachedImp.shell_keywords > 2 || cachedImp.unique_ips > 20) cachedType = 'suspicious_activity';
-
-        const shouldCreateCached = log.isAnomaly || cachedIndicators.length > 0;
-
-        if (shouldCreateCached) {
+        if (cachedEval.shouldCreateAlert) {
           try {
             const alertDoc = await Alert.create({
-              title: titleMap[cachedType] || 'Security Anomaly Detected',
+              title: titleMap[cachedEval.alertType] || 'Security Anomaly Detected',
               description: log.analysisResult?.summary || 'ML analysis detected anomalous activity in the uploaded log file.',
               severity: severityMap[log.severity] || 'medium',
-              type: cachedType,
+              type: cachedEval.alertType,
               status: 'new',
               sourceLog: log._id,
               user: log.uploadedBy,
               anomalyScore: log.anomalyScore,
-              indicators: cachedIndicators,
+              indicators: cachedEval.indicators,
               detectedAt: log.analyzedAt || new Date(),
             });
-            console.log('[Analysis] Retroactive alert created for already-analyzed log:', alertDoc._id);
+            console.log('[ALERT] Retroactive alert created successfully:', alertDoc._id);
           } catch (alertError) {
-            console.error('[Analysis] Retroactive alert creation FAILED:', alertError.message);
+            console.error('[ALERT] Retroactive alert creation FAILED:', alertError.message);
           }
         }
       }
@@ -161,12 +206,11 @@ export const analyzeLog = async (req, res, next) => {
       return res.status(500).json({ message: mlResult.error });
     }
 
-    console.log('[Analysis] ML service response:', JSON.stringify({
-      is_anomaly: mlResult.is_anomaly,
-      anomaly_score: mlResult.anomaly_score,
-      severity: mlResult.severity,
-      feature_importance_keys: mlResult.feature_importance ? Object.keys(mlResult.feature_importance) : null,
-    }, null, 2));
+    console.log('[ML ANALYSIS] Result received from ML service');
+    console.log('[ML ANALYSIS] is_anomaly:', mlResult.is_anomaly, '| type:', typeof mlResult.is_anomaly);
+    console.log('[ML ANALYSIS] anomaly_score:', mlResult.anomaly_score);
+    console.log('[ML ANALYSIS] severity:', mlResult.severity);
+    console.log('[ML ANALYSIS] feature_importance:', JSON.stringify(mlResult.feature_importance, null, 2));
 
     const updateData = {
       status: 'completed',
@@ -184,74 +228,41 @@ export const analyzeLog = async (req, res, next) => {
 
     await Log.findByIdAndUpdate(log._id, updateData);
 
-    console.log('[Analysis] is_anomaly value:', mlResult.is_anomaly, '| type:', typeof mlResult.is_anomaly);
-
     const featureImp = mlResult.feature_importance || {};
-    const indicators = [];
+    const evalResult = evaluateSecurityConditions(featureImp, mlResult);
 
-    if (featureImp.failed_auth > 3) {
-      indicators.push(`${Math.round(featureImp.failed_auth)} authentication failure(s) detected`);
-    }
-    if (featureImp.sql_keywords > 5) {
-      indicators.push(`${Math.round(featureImp.sql_keywords)} SQL keywords found (possible injection attempt)`);
-    }
-    if (featureImp.shell_keywords > 2) {
-      indicators.push(`${Math.round(featureImp.shell_keywords)} shell command(s) detected`);
-    }
-    if (featureImp.port_scan > 0) {
-      indicators.push('Port scanning activity detected');
-    }
-    if (featureImp.error_count > 10) {
-      indicators.push(`${Math.round(featureImp.error_count)} errors found in log`);
-    }
-    if (featureImp.unique_ips > 20) {
-      indicators.push(`${Math.round(featureImp.unique_ips)} unique source IPs (possible distributed activity)`);
-    }
-    if (featureImp.rate_limit_hits > 3) {
-      indicators.push(`${Math.round(featureImp.rate_limit_hits)} rate limit event(s) detected`);
-    }
-    if (featureImp.connection_resets > 3) {
-      indicators.push(`${Math.round(featureImp.connection_resets)} connection reset(s) detected`);
-    }
+    console.log('[ML ANALYSIS] Indicators found:', evalResult.indicators.length, evalResult.indicators);
+    console.log('[ML ANALYSIS] Alert type:', evalResult.alertType);
+    console.log('[ML ANALYSIS] is_anomaly:', mlResult.is_anomaly);
+    console.log('[ML ANALYSIS] hasHighAnomalyScore:', evalResult.hasHighAnomalyScore, '| score:', mlResult.anomaly_score);
+    console.log('[ML ANALYSIS] hasCriticalSeverity:', evalResult.hasCriticalSeverity);
+    console.log('[ML ANALYSIS] hasSecurityIndicators:', evalResult.hasSecurityIndicators);
+    console.log('[ML ANALYSIS] shouldCreateAlert:', evalResult.shouldCreateAlert);
 
-    let alertType = 'anomaly_detected';
-    if (featureImp.failed_auth > 3) alertType = 'brute_force';
-    else if (featureImp.sql_keywords > 5) alertType = 'sql_injection';
-    else if (featureImp.port_scan > 0) alertType = 'port_scan';
-    else if (featureImp.error_count > 20) alertType = 'high_error_rate';
-    else if (featureImp.shell_keywords > 2 || featureImp.unique_ips > 20) alertType = 'suspicious_activity';
-
-    const hasSecurityIndicators = indicators.length > 0;
-    const shouldCreateAlert = mlResult.is_anomaly || hasSecurityIndicators;
-
-    console.log('[Analysis] Feature importance:', JSON.stringify(featureImp, null, 2));
-    console.log('[Analysis] Security indicators found:', indicators.length, indicators);
-    console.log('[Analysis] Alert type:', alertType);
-    console.log('[Analysis] is_anomaly:', mlResult.is_anomaly, '| hasSecurityIndicators:', hasSecurityIndicators, '| shouldCreateAlert:', shouldCreateAlert);
-
-    if (shouldCreateAlert) {
-      console.log('[Analysis] Creating alert - type:', alertType, '| severity:', severityMap[mlResult.severity] || 'medium');
+    if (evalResult.shouldCreateAlert) {
+      console.log('[ALERT] Security condition detected - creating alert');
+      console.log('[ALERT] Creating alert - type:', evalResult.alertType, '| severity:', severityMap[mlResult.severity] || 'medium');
 
       try {
         const alertDoc = await Alert.create({
-          title: titleMap[alertType] || 'Security Anomaly Detected',
+          title: titleMap[evalResult.alertType] || 'Security Anomaly Detected',
           description: mlResult.summary || 'ML analysis detected anomalous activity in the uploaded log file.',
           severity: severityMap[mlResult.severity] || 'medium',
-          type: alertType,
+          type: evalResult.alertType,
           status: 'new',
           sourceLog: log._id,
           user: log.uploadedBy,
           anomalyScore: mlResult.anomaly_score,
-          indicators,
+          indicators: evalResult.indicators,
           detectedAt: new Date(),
         });
-        console.log('[Analysis] Alert created successfully:', alertDoc._id);
+        console.log('[ALERT] Alert created successfully:', alertDoc._id);
       } catch (alertError) {
-        console.error('[Analysis] Alert creation FAILED:', alertError.message);
-        console.error('[Analysis] Alert validation details:', alertError.errors || alertError);
+        console.error('[ALERT] Alert creation FAILED:', alertError.message);
+        console.error('[ALERT] Alert validation details:', alertError.errors || alertError);
       }
     } else {
-      console.log('[Analysis] No anomaly and no security indicators — skipping alert creation');
+      console.log('[ML ANALYSIS] No anomaly and no security indicators — skipping alert creation');
     }
 
     res.json({
@@ -274,7 +285,7 @@ export const analyzeLog = async (req, res, next) => {
 export const getAnalysisResult = async (req, res, next) => {
   try {
     const log = await Log.findById(req.params.id)
-      .select('originalName fileType fileSize status analysisStatus isAnomaly anomalyScore severity analyzedAt analysisResult createdAt');
+      .select('originalName fileType fileSize status analysisStatus isAnomaly anomalyScore severity analyzedAt analysisResult uploadedBy createdAt');
 
     if (!log) {
       return res.status(404).json({ message: 'Log not found' });

@@ -1,0 +1,7 @@
+/* ============================================
+   DESIGN SYSTEM — Index
+   Import all design system styles.
+   ============================================ */
+
+@import './tokens.css';
+@import './base.css';

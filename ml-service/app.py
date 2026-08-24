@@ -1,4 +1,4 @@
-import os
+﻿import os
 import re
 import json
 import logging
@@ -46,7 +46,7 @@ def extract_features(log_lines):
     sql_keywords = 0
     shell_keywords = 0
     unusual_user_agents = 0
-    port_scan迹象 = 0
+    port_scan_suspicious = 0
     rate_limit_hits = 0
     connection_resets = 0
 
@@ -112,7 +112,7 @@ def extract_features(log_lines):
             shell_keywords += 1
 
         if port_scan_pattern.search(line_stripped):
-            port_scan迹象 += 1
+            port_scan_suspicious += 1
 
         if rate_limit_pattern.search(line_stripped):
             rate_limit_hits += 1
@@ -149,7 +149,7 @@ def extract_features(log_lines):
         http_errors,
         sql_keywords,
         shell_keywords,
-        port_scan迹象,
+        port_scan_suspicious,
         rate_limit_hits,
         connection_resets,
     ]])
@@ -380,3 +380,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("ML_PORT", 5001))
     logger.info(f"Starting ML service on port {port}")
     app.run(host="0.0.0.0", port=port, debug=False)
+

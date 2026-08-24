@@ -1,0 +1,145 @@
+/* ============================================
+   DESIGN SYSTEM — Tokens
+   Centralized design tokens for the SOC platform.
+   All colors, spacing, typography, borders, shadows.
+   ============================================ */
+
+:root {
+  /* --- Background --- */
+  --ds-bg-primary: #0a0a1a;
+  --ds-bg-secondary: #0f0f23;
+  --ds-bg-surface: rgba(255, 255, 255, 0.03);
+  --ds-bg-surface-hover: rgba(255, 255, 255, 0.05);
+  --ds-bg-surface-active: rgba(255, 255, 255, 0.08);
+  --ds-bg-elevated: rgba(255, 255, 255, 0.04);
+  --ds-bg-overlay: rgba(0, 0, 0, 0.5);
+
+  /* --- Text --- */
+  --ds-text-primary: #f1f5f9;
+  --ds-text-secondary: #e2e8f0;
+  --ds-text-muted: rgba(148, 163, 184, 0.6);
+  --ds-text-muted-strong: rgba(148, 163, 184, 0.7);
+  --ds-text-faint: rgba(148, 163, 184, 0.45);
+  --ds-text-dim: rgba(148, 163, 184, 0.4);
+
+  /* --- Accent Colors --- */
+  --ds-blue: #3b82f6;
+  --ds-blue-light: #60a5fa;
+  --ds-indigo: #6366f1;
+  --ds-indigo-light: #818cf8;
+  --ds-indigo-dim: rgba(99, 102, 241, 0.2);
+  --ds-violet: #8b5cf6;
+  --ds-violet-dim: rgba(139, 92, 246, 0.1);
+
+  /* --- Semantic Colors --- */
+  --ds-success: #10b981;
+  --ds-success-light: #34d399;
+  --ds-success-dim: rgba(16, 185, 129, 0.1);
+  --ds-warning: #f59e0b;
+  --ds-warning-light: #fbbf24;
+  --ds-warning-dim: rgba(245, 158, 11, 0.1);
+  --ds-danger: #ef4444;
+  --ds-danger-light: #f87171;
+  --ds-danger-dim: rgba(239, 68, 68, 0.1);
+  --ds-info: #3b82f6;
+  --ds-info-light: #60a5fa;
+  --ds-info-dim: rgba(59, 130, 246, 0.1);
+
+  /* --- Severity --- */
+  --ds-severity-critical: #ef4444;
+  --ds-severity-critical-bg: rgba(239, 68, 68, 0.1);
+  --ds-severity-high: #f59e0b;
+  --ds-severity-high-bg: rgba(245, 158, 11, 0.1);
+  --ds-severity-medium: #3b82f6;
+  --ds-severity-medium-bg: rgba(59, 130, 246, 0.1);
+  --ds-severity-low: #10b981;
+  --ds-severity-low-bg: rgba(16, 185, 129, 0.1);
+  --ds-severity-none: #6b7280;
+  --ds-severity-none-bg: rgba(107, 114, 128, 0.1);
+
+  /* --- Status --- */
+  --ds-status-new: #ef4444;
+  --ds-status-new-bg: rgba(239, 68, 68, 0.1);
+  --ds-status-investigating: #3b82f6;
+  --ds-status-investigating-bg: rgba(59, 130, 246, 0.1);
+  --ds-status-resolved: #10b981;
+  --ds-status-resolved-bg: rgba(16, 185, 129, 0.1);
+
+  /* --- Borders --- */
+  --ds-border: rgba(255, 255, 255, 0.06);
+  --ds-border-hover: rgba(255, 255, 255, 0.1);
+  --ds-border-active: rgba(99, 102, 241, 0.3);
+  --ds-border-subtle: rgba(255, 255, 255, 0.04);
+
+  /* --- Border Radius --- */
+  --ds-radius-sm: 8px;
+  --ds-radius-md: 10px;
+  --ds-radius-lg: 12px;
+  --ds-radius-xl: 14px;
+  --ds-radius-2xl: 16px;
+
+  /* --- Spacing --- */
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-7: 28px;
+  --ds-space-8: 32px;
+  --ds-space-10: 40px;
+  --ds-space-12: 48px;
+
+  /* --- Typography --- */
+  --ds-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ds-font-size-xs: 10px;
+  --ds-font-size-sm: 11px;
+  --ds-font-size-base: 12px;
+  --ds-font-size-md: 13px;
+  --ds-font-size-lg: 14px;
+  --ds-font-size-xl: 15px;
+  --ds-font-size-2xl: 16px;
+  --ds-font-size-3xl: 18px;
+  --ds-font-size-4xl: 20px;
+  --ds-font-size-5xl: 22px;
+  --ds-font-size-6xl: 24px;
+  --ds-font-size-7xl: 28px;
+
+  --ds-font-weight-normal: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-semibold: 600;
+  --ds-font-weight-bold: 700;
+
+  --ds-line-height-tight: 1.2;
+  --ds-line-height-normal: 1.4;
+  --ds-line-height-relaxed: 1.5;
+
+  --ds-letter-spacing-tight: -0.4px;
+  --ds-letter-spacing-normal: 0;
+  --ds-letter-spacing-wide: 0.3px;
+  --ds-letter-spacing-wider: 0.5px;
+
+  /* --- Shadows --- */
+  --ds-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --ds-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+  --ds-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.25);
+  --ds-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.25);
+  --ds-shadow-glow: 0 0 20px rgba(99, 102, 241, 0.1);
+
+  /* --- Backdrop --- */
+  --ds-blur-sm: blur(12px);
+  --ds-blur-md: blur(20px);
+  --ds-blur-lg: blur(24px);
+
+  /* --- Transitions --- */
+  --ds-transition-fast: 0.15s ease;
+  --ds-transition-base: 0.22s ease;
+  --ds-transition-slow: 0.3s ease;
+  --ds-transition-spring: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --- Layout --- */
+  --ds-sidebar-width: 220px;
+  --ds-navbar-height: 56px;
+  --ds-content-padding: 28px;
+  --ds-max-width: 1400px;
+}

@@ -1,262 +1,9 @@
 /* ============================================
-   ML Analysis — Enterprise SOC Styles
+   ML Analysis — Content Styles
    ============================================ */
 
-.mla {
-  min-height: 100vh;
-  background: #0a0a1a;
-  position: relative;
-  overflow-x: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* --- Background --- */
-.mla-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.mla-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.25;
-}
-
-.mla-orb-1 {
-  width: 500px;
-  height: 500px;
-  background: linear-gradient(135deg, #3b82f6, #6363f1);
-  top: -150px;
-  left: -100px;
-  animation: mlaOrb1 20s ease-in-out infinite;
-}
-
-.mla-orb-2 {
-  width: 400px;
-  height: 400px;
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
-  bottom: -100px;
-  right: -80px;
-  animation: mlaOrb2 24s ease-in-out infinite;
-}
-
-@keyframes mlaOrb1 {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(40px, 30px); }
-}
-
-@keyframes mlaOrb2 {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(-35px, -25px); }
-}
-
-.mla-grid-overlay {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(99, 102, 241, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99, 102, 241, 0.02) 1px, transparent 1px);
-  background-size: 64px 64px;
-  opacity: 0.5;
-}
-
-/* --- Navbar --- */
-.mla-navbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  height: 56px;
-  background: rgba(10, 10, 26, 0.75);
-  backdrop-filter: blur(20px) saturate(1.3);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.mla-nav-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.mla-menu-btn {
-  display: none;
-  background: none;
-  border: none;
-  color: rgba(148, 163, 184, 0.7);
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 6px;
-  transition: color 0.2s, background 0.2s;
-  line-height: 0;
-}
-
-.mla-menu-btn:hover {
-  color: #e2e8f0;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.mla-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.mla-logo {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-}
-
-.mla-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #e2e8f0;
-  letter-spacing: -0.2px;
-}
-
-.mla-nav-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.mla-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: rgba(148, 163, 184, 0.7);
-  font-weight: 500;
-}
-
-.mla-status-dot {
-  width: 7px;
-  height: 7px;
-  background: #10b981;
-  border-radius: 50%;
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
-}
-
-.mla-user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mla-avatar {
-  width: 30px;
-  height: 30px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(148, 163, 184, 0.7);
-}
-
-.mla-username {
-  font-size: 13px;
-  color: rgba(148, 163, 184, 0.8);
-  font-weight: 500;
-}
-
-.mla-logout {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: rgba(239, 68, 68, 0.08);
-  color: rgba(252, 165, 165, 0.85);
-  border: 1px solid rgba(239, 68, 68, 0.15);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  line-height: 1;
-}
-
-.mla-logout:hover {
-  border-color: rgba(239, 68, 68, 0.3);
-  box-shadow: 0 0 16px rgba(239, 68, 68, 0.12);
-}
-
-/* --- Body --- */
-.mla-body {
-  display: flex;
-  position: relative;
-  z-index: 1;
-  min-height: calc(100vh - 56px);
-}
-
-/* --- Sidebar --- */
-.mla-sidebar {
-  width: 220px;
-  flex-shrink: 0;
-  padding: 20px 10px;
-  background: rgba(10, 10, 26, 0.5);
-  border-right: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.mla-sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.mla-sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 14px;
-  background: none;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  color: rgba(148, 163, 184, 0.75);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.22s ease;
-}
-
-.mla-sidebar-item:hover {
-  background: rgba(99, 102, 241, 0.07);
-  border-color: rgba(99, 102, 241, 0.12);
-  color: #e2e8f0;
-}
-
-.mla-sidebar-item.active {
-  background: rgba(99, 102, 241, 0.1);
-  border-color: rgba(99, 102, 241, 0.18);
-  color: #818cf8;
-}
-
-.mla-overlay {
-  display: none;
-}
-
-/* --- Main --- */
-.mla-main {
-  flex: 1;
+.mla-content {
   padding: 28px;
-  overflow-y: auto;
-  min-width: 0;
 }
 
 .mla-header {
@@ -266,26 +13,25 @@
 .mla-header h1 {
   margin: 0 0 4px;
   font-size: 22px;
-  font-weight: 700;
-  color: #f1f5f9;
+  font-weight: var(--ds-font-weight-bold);
+  color: var(--ds-text-primary);
   letter-spacing: -0.4px;
 }
 
 .mla-header p {
   margin: 0;
   font-size: 13px;
-  color: rgba(148, 163, 184, 0.6);
+  color: var(--ds-text-muted);
 }
 
-/* --- Content Grid --- */
-.mla-content {
+/* --- Layout --- */
+.mla-layout {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
   gap: 20px;
   align-items: start;
 }
 
-/* --- Left Panel --- */
 .mla-left {
   display: flex;
   flex-direction: column;
@@ -294,9 +40,9 @@
 
 /* --- Log Selector --- */
 .mla-log-selector {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  background: var(--ds-bg-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-xl);
   padding: 20px;
   min-height: 200px;
 }
@@ -311,14 +57,14 @@
 .mla-section-header h2 {
   margin: 0;
   font-size: 14px;
-  font-weight: 600;
-  color: #e2e8f0;
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-text-secondary);
 }
 
 .mla-count {
   font-size: 11px;
   color: rgba(148, 163, 184, 0.5);
-  font-weight: 500;
+  font-weight: var(--ds-font-weight-medium);
   padding: 3px 8px;
   background: rgba(255, 255, 255, 0.04);
   border-radius: 6px;
@@ -347,8 +93,8 @@
 .mla-empty p {
   margin: 0;
   font-size: 14px;
-  font-weight: 600;
-  color: rgba(148, 163, 184, 0.6);
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-text-muted);
 }
 
 .mla-empty span {
@@ -386,14 +132,14 @@
   background: none;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--ds-transition-fast);
   width: 100%;
   text-align: left;
   color: inherit;
 }
 
 .mla-log-item:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--ds-bg-surface);
   border-color: rgba(255, 255, 255, 0.04);
 }
 
@@ -411,7 +157,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #818cf8;
+  color: var(--ds-indigo-light);
   flex-shrink: 0;
 }
 
@@ -425,7 +171,7 @@
 
 .mla-log-name {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--ds-font-weight-medium);
   color: rgba(241, 245, 249, 0.85);
   white-space: nowrap;
   overflow: hidden;
@@ -439,7 +185,7 @@
 
 .mla-log-status {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: var(--ds-font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.3px;
   padding: 3px 8px;
@@ -450,29 +196,29 @@
 
 .mla-status-uploaded {
   background: rgba(59, 130, 246, 0.1);
-  color: #60a5fa;
+  color: var(--ds-blue-light);
 }
 
 .mla-status-processing {
   background: rgba(245, 158, 11, 0.1);
-  color: #fbbf24;
+  color: var(--ds-warning-light);
 }
 
 .mla-status-completed {
   background: rgba(16, 185, 129, 0.1);
-  color: #34d399;
+  color: var(--ds-success-light);
 }
 
 .mla-status-failed {
   background: rgba(239, 68, 68, 0.1);
-  color: #f87171;
+  color: var(--ds-danger-light);
 }
 
 /* --- Analyze Card --- */
 .mla-analyze-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  background: var(--ds-bg-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-xl);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -494,7 +240,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #818cf8;
+  color: var(--ds-indigo-light);
   flex-shrink: 0;
 }
 
@@ -509,8 +255,8 @@
 
 .mla-file-info-name {
   font-size: 13px;
-  font-weight: 600;
-  color: #f1f5f9;
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -519,7 +265,7 @@
 .mla-file-info-meta {
   font-size: 11px;
   color: rgba(148, 163, 184, 0.55);
-  font-weight: 500;
+  font-weight: var(--ds-font-weight-medium);
 }
 
 .mla-error {
@@ -529,7 +275,7 @@
   padding: 10px 14px;
   border-radius: 8px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--ds-font-weight-medium);
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.15);
   color: #fca5a5;
@@ -542,14 +288,14 @@
   gap: 8px;
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  background: linear-gradient(135deg, var(--ds-blue), var(--ds-indigo));
   color: #fff;
   border: none;
   border-radius: 10px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--ds-font-weight-semibold);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all var(--ds-transition-normal) ease;
   line-height: 1;
 }
 
@@ -584,9 +330,9 @@
 }
 
 .mla-result-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  background: var(--ds-bg-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-xl);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -610,7 +356,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #818cf8;
+  color: var(--ds-indigo-light);
 }
 
 .mla-pulse-ring {
@@ -629,27 +375,27 @@
 .mla-analyzing h3 {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
-  color: #e2e8f0;
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-text-secondary);
 }
 
 .mla-analyzing p {
   margin: 0;
   font-size: 13px;
-  color: rgba(148, 163, 184, 0.6);
+  color: var(--ds-text-muted);
 }
 
 .mla-progress-bar {
   width: 200px;
   height: 3px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--ds-border);
   border-radius: 3px;
   overflow: hidden;
 }
 
 .mla-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #6366f1);
+  background: linear-gradient(90deg, var(--ds-blue), var(--ds-indigo));
   border-radius: 3px;
   animation: mlaProgress 2s ease-in-out infinite;
 }
@@ -677,7 +423,7 @@
 .mla-placeholder-content h3 {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: var(--ds-font-weight-semibold);
   color: rgba(148, 163, 184, 0.5);
 }
 
@@ -698,14 +444,14 @@
 .mla-result-header h2 {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
-  color: #e2e8f0;
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-text-secondary);
 }
 
 .mla-result-time {
   font-size: 11px;
   color: rgba(148, 163, 184, 0.5);
-  font-weight: 500;
+  font-weight: var(--ds-font-weight-medium);
 }
 
 /* --- Verdict --- */
@@ -740,12 +486,12 @@
 
 .mla-verdict.anomaly .mla-verdict-icon {
   background: rgba(239, 68, 68, 0.1);
-  color: #f87171;
+  color: var(--ds-danger-light);
 }
 
 .mla-verdict.normal .mla-verdict-icon {
   background: rgba(16, 185, 129, 0.1);
-  color: #34d399;
+  color: var(--ds-success-light);
 }
 
 .mla-verdict-text {
@@ -756,7 +502,7 @@
 
 .mla-verdict-label {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: var(--ds-font-weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: rgba(148, 163, 184, 0.5);
@@ -764,16 +510,16 @@
 
 .mla-verdict-value {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: var(--ds-font-weight-bold);
   letter-spacing: -0.3px;
 }
 
 .mla-verdict.anomaly .mla-verdict-value {
-  color: #f87171;
+  color: var(--ds-danger-light);
 }
 
 .mla-verdict.normal .mla-verdict-value {
-  color: #34d399;
+  color: var(--ds-success-light);
 }
 
 /* --- Metrics --- */
@@ -796,7 +542,7 @@
 
 .mla-metric-label {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: var(--ds-font-weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.3px;
   color: rgba(148, 163, 184, 0.5);
@@ -804,8 +550,8 @@
 
 .mla-metric-value {
   font-size: 18px;
-  font-weight: 700;
-  color: #e2e8f0;
+  font-weight: var(--ds-font-weight-bold);
+  color: var(--ds-text-secondary);
 }
 
 .mla-metric-value.mla-score {
@@ -814,23 +560,23 @@
 }
 
 .mla-severity-critical {
-  color: #ef4444 !important;
+  color: var(--ds-danger) !important;
 }
 
 .mla-severity-high {
-  color: #f59e0b !important;
+  color: var(--ds-warning) !important;
 }
 
 .mla-severity-medium {
-  color: #3b82f6 !important;
+  color: var(--ds-blue) !important;
 }
 
 .mla-severity-low {
-  color: #10b981 !important;
+  color: var(--ds-success) !important;
 }
 
 .mla-severity-none {
-  color: #6b7280 !important;
+  color: var(--ds-text-dim) !important;
 }
 
 /* --- Summary --- */
@@ -844,8 +590,8 @@
 .mla-summary h3 {
   margin: 0 0 8px;
   font-size: 13px;
-  font-weight: 600;
-  color: #e2e8f0;
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-text-secondary);
 }
 
 .mla-summary p {
@@ -857,7 +603,7 @@
 
 /* --- Responsive --- */
 @media (max-width: 1024px) {
-  .mla-content {
+  .mla-layout {
     grid-template-columns: 1fr;
   }
 
@@ -867,48 +613,7 @@
 }
 
 @media (max-width: 768px) {
-  .mla-menu-btn {
-    display: flex;
-  }
-
-  .mla-title {
-    font-size: 12px;
-  }
-
-  .mla-status span:last-child {
-    display: none;
-  }
-
-  .mla-username {
-    display: none;
-  }
-
-  .mla-sidebar {
-    position: fixed;
-    top: 56px;
-    left: 0;
-    bottom: 0;
-    z-index: 90;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(10, 10, 26, 0.96);
-    width: 220px;
-  }
-
-  .mla-sidebar.open {
-    transform: translateX(0);
-  }
-
-  .mla-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    top: 56px;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: -1;
-  }
-
-  .mla-main {
+  .mla-content {
     padding: 20px 16px;
   }
 
@@ -923,27 +628,6 @@
   .mla-verdict {
     flex-direction: column;
     text-align: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .mla-navbar {
-    padding: 0 12px;
-    height: 50px;
-  }
-
-  .mla-logo {
-    width: 28px;
-    height: 28px;
-  }
-
-  .mla-logo svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .mla-logout span {
-    display: none;
   }
 }
 
