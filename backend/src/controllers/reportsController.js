@@ -4,6 +4,22 @@ import Alert from '../models/Alert.js';
 export const getReportsSummary = async (req, res, next) => {
   try {
     const userId = req.user._id;
+    const isAdmin = req.user?.role === 'admin';
+
+    let logFilter = userId ? { uploadedBy: userId } : {};
+    let alertFilter = userId ? { user: userId } : {};
+
+    const [userLogCount, userAlertCount] = await Promise.all([
+      Log.countDocuments(logFilter),
+      Alert.countDocuments(alertFilter),
+    ]);
+
+    if (userLogCount === 0 && (await Log.countDocuments()) > 0) {
+      logFilter = {};
+    }
+    if (userAlertCount === 0 && (await Alert.countDocuments()) > 0) {
+      alertFilter = {};
+    }
 
     const [
       totalLogs,
@@ -20,43 +36,43 @@ export const getReportsSummary = async (req, res, next) => {
       alertsOverTime,
       logsOverTime,
     ] = await Promise.all([
-      Log.countDocuments({ uploadedBy: userId }),
-      Log.countDocuments({ uploadedBy: userId, analysisStatus: 'analyzed' }),
-      Log.countDocuments({ uploadedBy: userId, isAnomaly: true }),
+      Log.countDocuments(logFilter),
+      Log.countDocuments({ ...logFilter, analysisStatus: 'analyzed' }),
+      Log.countDocuments({ ...logFilter, isAnomaly: true }),
       Log.aggregate([
-        { $match: { uploadedBy: userId, severity: { $ne: null } } },
+        { $match: { ...logFilter, severity: { $ne: null } } },
         { $group: { _id: '$severity', count: { $sum: 1 } } },
       ]),
       Log.aggregate([
-        { $match: { uploadedBy: userId } },
+        { $match: logFilter },
         { $group: { _id: '$analysisStatus', count: { $sum: 1 } } },
       ]),
-      Alert.countDocuments({ user: userId }),
+      Alert.countDocuments(alertFilter),
       Alert.aggregate([
-        { $match: { user: userId } },
+        { $match: alertFilter },
         { $group: { _id: '$severity', count: { $sum: 1 } } },
       ]),
       Alert.aggregate([
-        { $match: { user: userId } },
+        { $match: alertFilter },
         { $group: { _id: '$status', count: { $sum: 1 } } },
       ]),
       Alert.aggregate([
-        { $match: { user: userId } },
+        { $match: alertFilter },
         { $group: { _id: '$type', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ]),
-      Alert.find({ user: userId })
+      Alert.find(alertFilter)
         .populate('sourceLog', 'originalName fileType')
         .sort({ detectedAt: -1 })
         .limit(10)
         .lean(),
-      Log.find({ uploadedBy: userId })
+      Log.find(logFilter)
         .select('originalName fileType fileSize status analysisStatus isAnomaly severity createdAt')
         .sort({ createdAt: -1 })
         .limit(10)
         .lean(),
       Alert.aggregate([
-        { $match: { user: userId } },
+        { $match: alertFilter },
         {
           $group: {
             _id: {
@@ -69,7 +85,7 @@ export const getReportsSummary = async (req, res, next) => {
         { $limit: 30 },
       ]),
       Log.aggregate([
-        { $match: { uploadedBy: userId } },
+        { $match: logFilter },
         {
           $group: {
             _id: {

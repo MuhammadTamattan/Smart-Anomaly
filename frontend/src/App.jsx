@@ -9,6 +9,8 @@ import LogUpload from './pages/LogUpload';
 import MLAnalysis from './pages/MLAnalysis';
 import Alerts from './pages/Alerts';
 import Reports from './pages/Reports';
+import Profile from './pages/Profile';
+import WebsiteScanner from './pages/WebsiteScanner';
 
 function App() {
   return (
@@ -25,10 +27,12 @@ function App() {
             }
           >
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/log-upload" element={<LogUpload />} />
             <Route path="/ml-analysis" element={<MLAnalysis />} />
+            <Route path="/log-upload" element={<LogUpload />} />
+            <Route path="/website-scanner" element={<WebsiteScanner />} />
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>

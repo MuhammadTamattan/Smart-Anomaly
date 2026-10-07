@@ -1,0 +1,25 @@
+# ==============================================================================
+# DEMO SYNTHETIC LOG DATA - SRI SATHYA SARAVANA MOTOR AND PUMPS
+# SCENARIO: Normal Employee Activity (Clean Operational Baseline)
+# NOTE: Synthetic demonstration telemetry for Smart Anomaly Detection ML Testing
+# ==============================================================================
+2026-09-22T09:15:02.140Z [INFO] 192.168.1.45 EMP101 "POST /api/erp/auth/login HTTP/1.1" 200 482 "User Ramesh (EMP101) authenticated successfully - Shift Morning"
+2026-09-22T09:16:15.320Z [INFO] 192.168.1.45 EMP101 "GET /api/erp/production/orders?status=active HTTP/1.1" 200 3210 "Queried production batch list for 5HP Submersible Pumps"
+2026-09-22T09:18:40.510Z [INFO] 192.168.1.52 EMP102 "POST /api/erp/auth/login HTTP/1.1" 200 482 "User Priya (EMP102) authenticated successfully - Shift Morning"
+2026-09-22T09:20:11.890Z [INFO] 192.168.1.52 EMP102 "GET /api/erp/inventory/items?category=copper_winding_wire HTTP/1.1" 200 1840 "Inventory stock level check: 2.5mm copper winding wire"
+2026-09-22T09:25:34.210Z [INFO] 192.168.1.45 EMP101 "POST /api/erp/production/job-card/create HTTP/1.1" 201 920 "Created Job Card #JC-8842: V4 Submersible Pump Rotor Assembly"
+2026-09-22T09:32:05.105Z [INFO] 192.168.1.52 EMP102 "POST /api/erp/sales/invoice/generate HTTP/1.1" 200 2450 "Generated Dispatch Invoice #INV-2026-4410: Coimbatore Agri Dealer"
+2026-09-22T10:05:44.780Z [INFO] 192.168.1.60 EMP103 "POST /api/erp/auth/login HTTP/1.1" 200 482 "User Karthik (EMP103) authenticated successfully"
+2026-09-22T10:12:19.430Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/quality/inspection-records?model=SS-150-Openwell HTTP/1.1" 200 1560 "Approved hydrostatic pressure test report for Openwell Monobloc"
+2026-09-22T10:45:11.900Z [INFO] 192.168.1.45 EMP101 "GET /api/erp/dispatch/truck-manifest?date=2026-09-22 HTTP/1.1" 200 1140 "Verified loading dock manifest for agricultural pump shipment"
+2026-09-22T11:20:30.450Z [INFO] 192.168.1.52 EMP102 "POST /api/erp/customer/support/ticket/update HTTP/1.1" 200 680 "Updated warranty registration for customer Sri Murugan Farms"
+2026-09-22T11:55:00.120Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/scada/pump-telemetry/baseline HTTP/1.1" 200 4120 "SCADA telemetry check: Motor winding temperatures within nominal 42C"
+2026-09-22T12:30:15.650Z [INFO] 192.168.1.45 EMP101 "POST /api/erp/auth/logout HTTP/1.1" 200 140 "User Ramesh (EMP101) logged out for lunch interval"
+2026-09-22T13:35:22.410Z [INFO] 192.168.1.45 EMP101 "POST /api/erp/auth/login HTTP/1.1" 200 482 "User Ramesh (EMP101) authenticated successfully - Shift Afternoon"
+2026-09-22T14:10:05.880Z [INFO] 192.168.1.52 EMP102 "GET /api/erp/vendor/purchase-order/status HTTP/1.1" 200 2190 "PO #PO-9912 stainless steel shaft casting confirmed by foundry vendor"
+2026-09-22T14:45:33.210Z [INFO] 192.168.1.60 EMP103 "POST /api/erp/production/batch-completion HTTP/1.1" 200 850 "Finished assembly batch of 50 units SS-300 High Head Monobloc Pumps"
+2026-09-22T15:20:19.110Z [INFO] 192.168.1.45 EMP101 "GET /api/erp/inventory/raw-materials/report HTTP/1.1" 200 3840 "Daily raw material consumption report compiled: Cast iron & Silicon steel"
+2026-09-22T16:05:40.750Z [INFO] 192.168.1.52 EMP102 "GET /api/erp/reports/daily-dispatch-summary HTTP/1.1" 200 1920 "Generated evening dispatch summary for logistics courier"
+2026-09-22T16:50:11.340Z [INFO] 192.168.1.60 EMP103 "POST /api/erp/auth/logout HTTP/1.1" 200 140 "User Karthik (EMP103) logged out normally"
+2026-09-22T17:15:28.920Z [INFO] 192.168.1.52 EMP102 "POST /api/erp/auth/logout HTTP/1.1" 200 140 "User Priya (EMP102) logged out normally"
+2026-09-22T17:28:45.610Z [INFO] 192.168.1.45 EMP101 "POST /api/erp/auth/logout HTTP/1.1" 200 140 "User Ramesh (EMP101) logged out normally"

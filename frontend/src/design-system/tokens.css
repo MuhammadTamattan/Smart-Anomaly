@@ -22,14 +22,31 @@
   --ds-text-faint: rgba(148, 163, 184, 0.45);
   --ds-text-dim: rgba(148, 163, 184, 0.4);
 
+  /* --- Dark Green & White Theme Palette --- */
+  --ds-green-forest: #0c3631;
+  --ds-green-forest-dark: #07231f;
+  --ds-green-forest-light: #15453f;
+  --ds-mint-bright: #00d68f;
+  --ds-mint-soft: #10b981;
+  --ds-mint-subtle: #e6f7f2;
+  --ds-coral-accent: #f97316;
+  --ds-card-bg-white: #ffffff;
+  --ds-canvas-bg: #f4f8f6;
+
   /* --- Accent Colors --- */
   --ds-blue: #3b82f6;
   --ds-blue-light: #60a5fa;
+  --ds-cyan: #06b6d4;
+  --ds-cyan-light: #22d3ee;
+  --ds-cyan-dim: rgba(6, 182, 212, 0.15);
+  --ds-cyan-glow: 0 0 16px rgba(6, 182, 212, 0.35);
   --ds-indigo: #6366f1;
   --ds-indigo-light: #818cf8;
   --ds-indigo-dim: rgba(99, 102, 241, 0.2);
   --ds-violet: #8b5cf6;
   --ds-violet-dim: rgba(139, 92, 246, 0.1);
+  --ds-crimson: #f43f5e;
+  --ds-crimson-glow: 0 0 16px rgba(244, 63, 94, 0.35);
 
   /* --- Semantic Colors --- */
   --ds-success: #10b981;
@@ -92,6 +109,7 @@
 
   /* --- Typography --- */
   --ds-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ds-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   --ds-font-size-xs: 10px;
   --ds-font-size-sm: 11px;
   --ds-font-size-base: 12px;

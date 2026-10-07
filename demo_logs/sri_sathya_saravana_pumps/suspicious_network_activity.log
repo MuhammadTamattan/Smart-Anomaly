@@ -1,0 +1,25 @@
+# ==============================================================================
+# DEMO SYNTHETIC LOG DATA - SRI SATHYA SARAVANA MOTOR AND PUMPS
+# SCENARIO: Suspicious Network Activity (Port Reconnaissance & Industrial SCADA Probe)
+# NOTE: Synthetic demonstration telemetry for Smart Anomaly Detection ML Testing
+# ==============================================================================
+2026-09-22T04:10:01.010Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 21 (FTP): connection refused"
+2026-09-22T04:10:01.120Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 22 (SSH): connection refused"
+2026-09-22T04:10:01.240Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 23 (Telnet): connection refused"
+2026-09-22T04:10:01.350Z [INFO] 198.51.100.200 - "TCP SYN scan received from 198.51.100.200 to port 80 (HTTP): accepted"
+2026-09-22T04:10:01.460Z [INFO] 198.51.100.200 - "TCP SYN scan received from 198.51.100.200 to port 443 (HTTPS): accepted"
+2026-09-22T04:10:01.580Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 502 (Modbus SCADA Pump Controller): connection refused"
+2026-09-22T04:10:01.690Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 1433 (MSSQL ERP Database): connection refused"
+2026-09-22T04:10:01.810Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 1883 (MQTT Pump Telemetry Broker): connection refused"
+2026-09-22T04:10:01.930Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 3306 (MySQL): connection refused"
+2026-09-22T04:10:02.050Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 4840 (OPC-UA Industrial Automation): connection refused"
+2026-09-22T04:10:02.160Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 5900 (VNC Factory Terminal): connection refused"
+2026-09-22T04:10:02.280Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 8080 (ERP Alternate Gateway): connection refused"
+2026-09-22T04:10:02.400Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 8443 (Management Console): connection refused"
+2026-09-22T04:10:02.510Z [WARN] 198.51.100.200 - "TCP SYN probe detected from 198.51.100.200 to port 9200 (Elasticsearch Cluster): connection refused"
+2026-09-22T04:10:03.110Z [ERROR] 198.51.100.200 - "Port scan sweep detected: nmap scan signature identified from 198.51.100.200"
+2026-09-22T04:10:03.250Z [ERROR] 198.51.100.200 - "Rapid sequential port connection probe: 15 ports swept in 2.2 seconds"
+2026-09-22T04:10:03.390Z [ERROR] 198.51.100.200 - "Firewall alert: Ingress port scan blocked, connection reset sent to 198.51.100.200"
+2026-09-22T04:10:03.520Z [ERROR] 198.51.100.200 - "Network security policy violation: Automated scan probe rejected, connection reset"
+2026-09-22T04:10:03.650Z [WARN] 198.51.100.200 - "Gateway connection timeout: Host unreachable, packet dropped"
+2026-09-22T04:10:04.010Z [WARN] 198.51.100.200 - "IP quarantine active: 198.51.100.200 added to edge firewall blocklist"

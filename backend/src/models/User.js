@@ -10,6 +10,11 @@ const userSchema = new mongoose.Schema(
       minlength: 2,
       maxlength: 50,
     },
+    username: {
+      type: String,
+      trim: true,
+      default: 'alexvance',
+    },
     email: {
       type: String,
       required: [true, 'Email is required'],
@@ -28,6 +33,36 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
+    },
+    roleTitle: {
+      type: String,
+      default: 'Student / Project Analyst',
+    },
+    department: {
+      type: String,
+      default: 'Computer Science & Engineering',
+    },
+    phone: {
+      type: String,
+      default: '+1 (555) 123-4567',
+    },
+    analystId: {
+      type: String,
+      default: '#stu-2026',
+    },
+    clearance: {
+      type: String,
+      default: 'Standard Access',
+    },
+    timezone: {
+      type: String,
+      default: 'UTC +05:30 (Indian Standard Time)',
+    },
+    notifications: {
+      notifyP1: { type: Boolean, default: true },
+      notifyDrift: { type: Boolean, default: true },
+      notifyWeekly: { type: Boolean, default: false },
+      autoQuarantine: { type: Boolean, default: true },
     },
   },
   { timestamps: true }

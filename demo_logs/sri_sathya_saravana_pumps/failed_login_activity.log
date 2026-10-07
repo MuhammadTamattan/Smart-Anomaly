@@ -1,0 +1,22 @@
+# ==============================================================================
+# DEMO SYNTHETIC LOG DATA - SRI SATHYA SARAVANA MOTOR AND PUMPS
+# SCENARIO: Repeated Failed Login (Credential Stuffing / Brute-Force Activity)
+# NOTE: Synthetic demonstration telemetry for Smart Anomaly Detection ML Testing
+# ==============================================================================
+2026-09-22T03:14:01.100Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: invalid password for user EMP101"
+2026-09-22T03:14:02.320Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: invalid password for user EMP101"
+2026-09-22T03:14:03.450Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: credential mismatch for user EMP101"
+2026-09-22T03:14:04.610Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: invalid password for user EMP102"
+2026-09-22T03:14:05.820Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: credential mismatch for user EMP102"
+2026-09-22T03:14:06.940Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: invalid password for user EMP103"
+2026-09-22T03:14:08.105Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: invalid password for user EMP104"
+2026-09-22T03:14:09.280Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: invalid password for user EMP105"
+2026-09-22T03:14:10.410Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: incorrect credential for user admin"
+2026-09-22T03:14:11.590Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: incorrect password for user root"
+2026-09-22T03:14:12.750Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: unauthorized login attempt for plant_manager"
+2026-09-22T03:14:13.910Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: wrong password for user supervisor"
+2026-09-22T03:14:15.110Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: credential verification denied for pumps_qa"
+2026-09-22T03:14:16.320Z [WARN] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 401 320 "Authentication failed: invalid password for user dispatch_head"
+2026-09-22T03:14:17.550Z [ERROR] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 403 410 "Account login denied: multiple consecutive authentication failures"
+2026-09-22T03:14:18.890Z [ERROR] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 429 280 "Too many requests: rate limit exceeded on login gateway (15 fails / 20 sec)"
+2026-09-22T03:14:20.100Z [ERROR] 203.0.113.88 - "POST /api/erp/auth/login HTTP/1.1" 429 280 "Rate limit enforced: IP 203.0.113.88 temporarily throttled and blacklisted"

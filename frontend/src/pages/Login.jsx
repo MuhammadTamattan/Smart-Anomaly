@@ -129,6 +129,17 @@ const Login = () => {
               <button type="submit" className="login-btn" disabled={loading}>
                 {loading ? <span className="btn-loader" aria-hidden="true" /> : 'Sign in'}
               </button>
+
+              <button
+                type="button"
+                className="login-btn login-demo-btn"
+                onClick={() => {
+                  login('demo@soc.io', 'demo123');
+                  navigate('/dashboard');
+                }}
+              >
+                ⚡ Quick Demo Access (SOC Command Center)
+              </button>
             </form>
 
             <p className="login-footer">
@@ -139,11 +150,13 @@ const Login = () => {
       </main>
 
       <aside className="login-image-section" aria-hidden="true">
+        <div className="login-image-glow" />
         <img
           src={loginSecurityImage}
           alt=""
           className="login-image"
         />
+        <div className="login-scan-beam" />
         <div className="login-image-overlay" />
       </aside>
     </div>

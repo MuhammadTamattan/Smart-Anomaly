@@ -2,7 +2,8 @@ import Alert from '../models/Alert.js';
 
 export const getAlerts = async (req, res, next) => {
   try {
-    const alerts = await Alert.find({ user: req.user._id })
+    const filter = req.user?.role === 'admin' ? {} : { user: req.user._id };
+    const alerts = await Alert.find(filter)
       .populate('sourceLog', 'originalName fileType')
       .sort({ detectedAt: -1 });
     res.json(alerts);
@@ -13,7 +14,8 @@ export const getAlerts = async (req, res, next) => {
 
 export const getAlertById = async (req, res, next) => {
   try {
-    const alert = await Alert.findOne({ _id: req.params.id, user: req.user._id })
+    const query = req.user?.role === 'admin' ? { _id: req.params.id } : { _id: req.params.id, user: req.user._id };
+    const alert = await Alert.findOne(query)
       .populate('sourceLog', 'originalName fileType fileSize status analysisResult');
 
     if (!alert) {
@@ -21,6 +23,39 @@ export const getAlertById = async (req, res, next) => {
     }
 
     res.json(alert);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createAlert = async (req, res, next) => {
+  try {
+    const {
+      title,
+      description,
+      severity = 'high',
+      type = 'anomaly_detected',
+      status = 'new',
+      sourceLog = null,
+      anomalyScore = 0.85,
+      indicators = [],
+    } = req.body;
+
+    const alert = await Alert.create({
+      title: title || 'Anomaly Detected in Log',
+      description: description || 'Anomaly detected during log analysis.',
+      severity,
+      type,
+      status,
+      sourceLog: sourceLog || null,
+      user: req.user._id,
+      anomalyScore,
+      indicators: Array.isArray(indicators) && indicators.length > 0 ? indicators : ['Unusual pattern detected'],
+      detectedAt: new Date(),
+    });
+
+    const populated = await Alert.findById(alert._id).populate('sourceLog', 'originalName fileType');
+    res.status(201).json(populated || alert);
   } catch (error) {
     next(error);
   }
@@ -37,10 +72,13 @@ export const updateAlertStatus = async (req, res, next) => {
     const updateData = { status };
     if (status === 'resolved') {
       updateData.resolvedAt = new Date();
+    } else {
+      updateData.resolvedAt = null;
     }
 
+    const query = req.user?.role === 'admin' ? { _id: req.params.id } : { _id: req.params.id, user: req.user._id };
     const alert = await Alert.findOneAndUpdate(
-      { _id: req.params.id, user: req.user._id },
+      query,
       updateData,
       { new: true }
     ).populate('sourceLog', 'originalName fileType');
@@ -57,13 +95,14 @@ export const updateAlertStatus = async (req, res, next) => {
 
 export const deleteAlert = async (req, res, next) => {
   try {
-    const alert = await Alert.findOneAndDelete({ _id: req.params.id, user: req.user._id });
+    const query = req.user?.role === 'admin' ? { _id: req.params.id } : { _id: req.params.id, user: req.user._id };
+    const alert = await Alert.findOneAndDelete(query);
 
     if (!alert) {
       return res.status(404).json({ message: 'Alert not found' });
     }
 
-    res.json({ message: 'Alert deleted' });
+    res.json({ message: 'Alert deleted', id: req.params.id });
   } catch (error) {
     next(error);
   }
@@ -71,16 +110,16 @@ export const deleteAlert = async (req, res, next) => {
 
 export const getAlertStats = async (req, res, next) => {
   try {
-    const userId = req.user._id;
+    const filter = req.user?.role === 'admin' ? {} : { user: req.user._id };
 
     const [total, critical, high, medium, low, investigating, resolved] = await Promise.all([
-      Alert.countDocuments({ user: userId }),
-      Alert.countDocuments({ user: userId, severity: 'critical' }),
-      Alert.countDocuments({ user: userId, severity: 'high' }),
-      Alert.countDocuments({ user: userId, severity: 'medium' }),
-      Alert.countDocuments({ user: userId, severity: 'low' }),
-      Alert.countDocuments({ user: userId, status: 'investigating' }),
-      Alert.countDocuments({ user: userId, status: 'resolved' }),
+      Alert.countDocuments(filter),
+      Alert.countDocuments({ ...filter, severity: 'critical' }),
+      Alert.countDocuments({ ...filter, severity: 'high' }),
+      Alert.countDocuments({ ...filter, severity: 'medium' }),
+      Alert.countDocuments({ ...filter, severity: 'low' }),
+      Alert.countDocuments({ ...filter, status: 'investigating' }),
+      Alert.countDocuments({ ...filter, status: 'resolved' }),
     ]);
 
     res.json({ total, critical, high, medium, low, investigating, resolved });
@@ -88,3 +127,4 @@ export const getAlertStats = async (req, res, next) => {
     next(error);
   }
 };
+

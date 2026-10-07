@@ -18,7 +18,21 @@ const alertSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['anomaly_detected', 'brute_force', 'sql_injection', 'port_scan', 'high_error_rate', 'suspicious_activity'],
+      enum: [
+        'anomaly_detected',
+        'brute_force',
+        'sql_injection',
+        'port_scan',
+        'high_error_rate',
+        'suspicious_activity',
+        'ddos',
+        'dns_tunneling',
+        'credential_stuffing',
+        'injection',
+        'zero_day',
+        'ransomware',
+      ],
+      default: 'anomaly_detected',
       required: true,
     },
     status: {
@@ -29,7 +43,8 @@ const alertSchema = new mongoose.Schema(
     sourceLog: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Log',
-      required: true,
+      required: false,
+      default: null,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

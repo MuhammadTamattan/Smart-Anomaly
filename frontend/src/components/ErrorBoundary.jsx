@@ -64,21 +64,48 @@ export default class ErrorBoundary extends Component {
             }}>
               An unexpected error occurred. Please try refreshing the page.
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              style={{
-                padding: '10px 24px',
-                background: 'linear-gradient(135deg, var(--ds-blue), var(--ds-indigo))',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 'var(--ds-radius-md)',
-                fontSize: 'var(--ds-font-size-md)',
-                fontWeight: 'var(--ds-font-weight-semibold)',
-                cursor: 'pointer',
-              }}
-            >
-              Refresh Page
-            </button>
+            {this.state.error && (
+              <details style={{ textAlign: 'left', marginBottom: '20px', background: 'rgba(0, 0, 0, 0.25)', padding: '10px 14px', borderRadius: '8px', fontSize: '12px', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.2)', wordBreak: 'break-word' }}>
+                <summary style={{ cursor: 'pointer', color: 'var(--ds-text-secondary, #94a3b8)', marginBottom: '6px', fontWeight: 600 }}>Error Details</summary>
+                <div style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', maxHeight: '140px', overflowY: 'auto' }}>
+                  {this.state.error.toString()}
+                </div>
+              </details>
+            )}
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => window.location.reload()}
+                style={{
+                  padding: '10px 22px',
+                  background: 'linear-gradient(135deg, var(--ds-blue, #3b82f6), var(--ds-indigo, #6366f1))',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 'var(--ds-radius-md, 8px)',
+                  fontSize: 'var(--ds-font-size-md, 14px)',
+                  fontWeight: 'var(--ds-font-weight-semibold, 600)',
+                  cursor: 'pointer',
+                }}
+              >
+                Refresh Page
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.href = '/login';
+                }}
+                style={{
+                  padding: '10px 18px',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: 'var(--ds-text-primary, #e2e8f0)',
+                  border: '1px solid var(--ds-border, rgba(255, 255, 255, 0.1))',
+                  borderRadius: 'var(--ds-radius-md, 8px)',
+                  fontSize: 'var(--ds-font-size-md, 14px)',
+                  cursor: 'pointer',
+                }}
+              >
+                Reset & Go to Login
+              </button>
+            </div>
           </div>
         </div>
       );

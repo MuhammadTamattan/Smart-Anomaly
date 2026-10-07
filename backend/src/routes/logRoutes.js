@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { uploadLog, getLogs, deleteLog, upload } from '../controllers/logController.js';
+import { uploadLog, createPresetLog, getLogs, getLogContent, deleteLog, upload } from '../controllers/logController.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -24,7 +24,9 @@ const handleUpload = (req, res, next) => {
 };
 
 router.post('/upload', protect, handleUpload, uploadLog);
+router.post('/preset', protect, createPresetLog);
 router.get('/', protect, getLogs);
+router.get('/:id/content', protect, getLogContent);
 router.delete('/:id', protect, deleteLog);
 
 export default router;

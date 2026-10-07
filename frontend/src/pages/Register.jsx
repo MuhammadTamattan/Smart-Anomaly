@@ -158,11 +158,13 @@ const Register = () => {
       </main>
 
       <aside className="register-image-section" aria-hidden="true">
+        <div className="register-image-glow" />
         <img
           src={loginSecurityImage}
           alt=""
           className="register-image"
         />
+        <div className="register-scan-beam" />
         <div className="register-image-overlay" />
       </aside>
     </div>

@@ -2,6 +2,7 @@ import express from 'express';
 import {
   getAlerts,
   getAlertById,
+  createAlert,
   updateAlertStatus,
   deleteAlert,
   getAlertStats,
@@ -12,6 +13,7 @@ const router = express.Router();
 
 router.get('/stats', protect, getAlertStats);
 router.get('/', protect, getAlerts);
+router.post('/', protect, createAlert);
 router.get('/:id', protect, getAlertById);
 router.patch('/:id/status', protect, updateAlertStatus);
 router.delete('/:id', protect, deleteAlert);

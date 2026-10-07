@@ -1,79 +1,107 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { formatFileSize, formatDate, getFileIcon } from '../utils/helpers';
 import './LogUpload.css';
 
 const ALLOWED_EXTENSIONS = ['.log', '.txt', '.csv'];
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
-const getStatusConfig = (status) => {
-  switch (status) {
-    case 'uploaded':
-      return { label: 'Uploaded', className: 'lu-status-uploaded' };
-    case 'processing':
-      return { label: 'Processing', className: 'lu-status-processing' };
-    case 'completed':
-      return { label: 'Completed', className: 'lu-status-completed' };
-    case 'failed':
-      return { label: 'Failed', className: 'lu-status-failed' };
-    default:
-      return { label: status, className: 'lu-status-uploaded' };
-  }
+const SAMPLE_PRESETS = {
+  normal: {
+    id: 'sample_normal',
+    title: 'Normal Server Traffic',
+    fileName: 'normal_traffic.log',
+    fileType: 'log',
+    linesCount: 20,
+    isAnomaly: false,
+    sampleLines: [
+      { id: 1, time: '09:00:15', ip: '192.168.1.10', method: 'GET', target: '/index.html', status: '200', isAnomaly: false, label: 'Page load' },
+      { id: 2, time: '09:01:22', ip: '192.168.1.10', method: 'GET', target: '/static/css/style.css', status: '200', isAnomaly: false, label: 'Asset request' },
+      { id: 3, time: '09:03:40', ip: '192.168.1.15', method: 'POST', target: '/api/auth/login', status: '200', isAnomaly: false, label: 'User login' },
+      { id: 4, time: '09:05:10', ip: '192.168.1.15', method: 'GET', target: '/dashboard', status: '200', isAnomaly: false, label: 'Dashboard access' },
+      { id: 5, time: '09:10:05', ip: '192.168.1.20', method: 'GET', target: '/api/items', status: '200', isAnomaly: false, label: 'Data fetch' },
+      { id: 6, time: '09:15:30', ip: '192.168.1.15', method: 'POST', target: '/api/auth/logout', status: '200', isAnomaly: false, label: 'User logout' },
+    ],
+  },
+  anomaly: {
+    id: 'sample_anomaly',
+    title: 'Failed Logins (Brute Force)',
+    fileName: 'failed_logins.log',
+    fileType: 'log',
+    linesCount: 22,
+    isAnomaly: true,
+    sampleLines: [
+      { id: 1, time: '03:14:01', ip: '203.0.113.88', method: 'POST', target: '/api/auth/login', status: '401', isAnomaly: true, label: 'Failed login #1' },
+      { id: 2, time: '03:14:03', ip: '203.0.113.88', method: 'POST', target: '/api/auth/login', status: '401', isAnomaly: true, label: 'Failed login #2' },
+      { id: 3, time: '03:14:06', ip: '203.0.113.88', method: 'POST', target: '/api/auth/login', status: '401', isAnomaly: true, label: 'Failed login #3' },
+      { id: 4, time: '03:14:10', ip: '203.0.113.88', method: 'POST', target: '/api/auth/login', status: '401', isAnomaly: true, label: 'Failed login #4' },
+      { id: 5, time: '03:14:15', ip: '203.0.113.88', method: 'POST', target: '/api/auth/login', status: '429', isAnomaly: true, label: 'Rate limit hit' },
+      { id: 6, time: '03:14:20', ip: '203.0.113.88', method: 'GET', target: '/admin/config.php', status: '403', isAnomaly: true, label: 'Unauthorized endpoint' },
+    ],
+  },
 };
 
 export default function LogUpload() {
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const dropRef = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [uploadError, setUploadError] = useState('');
+  const [uploadStatus, setUploadStatus] = useState('');
   const [logs, setLogs] = useState([]);
   const [loadingLogs, setLoadingLogs] = useState(true);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
+  const [searchFilter, setSearchFilter] = useState('');
+  const [toasts, setToasts] = useState([]);
+  const [analyzingRowId, setAnalyzingRowId] = useState(null);
 
-  useEffect(() => {
-    fetchLogs();
+  // Toast notification helper
+  const showToast = useCallback((msg, type = 'success') => {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, msg, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4000);
   }, []);
 
-  const fetchLogs = async () => {
+  // Fetch all logs from MongoDB
+  const fetchLogs = useCallback(async () => {
     try {
       setLoadingLogs(true);
       const res = await api.get('/logs');
-      setLogs(res.data);
-    } catch {
-      // silent
+      setLogs(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.warn('[LogUpload] Fetch notice:', err.message);
+      setLogs([]);
     } finally {
       setLoadingLogs(false);
     }
-  };
+  }, []);
 
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
+  // File validation
   const validateFile = (file) => {
     const ext = '.' + file.name.split('.').pop().toLowerCase();
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
-      return `Unsupported file type. Accepted: ${ALLOWED_EXTENSIONS.join(', ')}`;
+      return `Supported formats: ${ALLOWED_EXTENSIONS.join(', ')}`;
     }
-    if (file.size === 0) {
-      return 'Empty files are not allowed';
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      return `File too large. Maximum size is ${formatFileSize(MAX_FILE_SIZE)}`;
-    }
+    if (file.size === 0) return 'The selected file is empty.';
+    if (file.size > MAX_FILE_SIZE) return 'File exceeds maximum 50MB limit.';
     return null;
   };
 
   const handleFileSelect = (file) => {
-    const error = validateFile(file);
-    if (error) {
-      setUploadError(error);
+    const err = validateFile(file);
+    if (err) {
+      showToast(err, 'warning');
       setSelectedFile(null);
       return;
     }
-    setUploadError('');
-    setUploadSuccess(false);
     setSelectedFile(file);
+    setUploadStatus('');
   };
 
   const handleInputChange = (e) => {
@@ -81,238 +109,438 @@ export default function LogUpload() {
     if (file) handleFileSelect(file);
   };
 
-  const handleDrop = useCallback((e) => {
+  const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
     const file = e.dataTransfer.files?.[0];
     if (file) handleFileSelect(file);
-  }, []);
-
-  const handleDragOver = useCallback((e) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
-
-  const handleRemoveFile = () => {
-    setSelectedFile(null);
-    setUploadError('');
-    setUploadSuccess(false);
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  // Upload file to MongoDB via API
   const handleUpload = async () => {
     if (!selectedFile || uploading) return;
 
     try {
       setUploading(true);
-      setUploadError('');
-      setUploadSuccess(false);
-
+      setUploadStatus('Uploading file...');
       const formData = new FormData();
       formData.append('file', selectedFile);
 
       await api.post('/logs/upload', formData);
 
-      setUploadSuccess(true);
+      setUploadStatus('Successfully uploaded');
+      showToast(`✓ Log "${selectedFile.name}" uploaded successfully!`);
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
+
       fetchLogs();
     } catch (err) {
-      const msg = err.response?.data?.message || 'Upload failed. Please try again.';
-      setUploadError(msg);
+      showToast('Upload failed: ' + (err.response?.data?.message || err.message), 'warning');
+      setUploadStatus('');
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (deletingId) return;
+  // Upload file and immediately run ML analysis
+  const handleUploadAndAnalyze = async () => {
+    if (!selectedFile || uploading) return;
+
     try {
-      setDeletingId(id);
-      await api.delete(`/logs/${id}`);
-      setLogs((prev) => prev.filter((l) => l._id !== id));
-    } catch {
-      // silent
+      setUploading(true);
+      setUploadStatus('1/2 Uploading log file...');
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      const res = await api.post('/logs/upload', formData);
+      const newLog = res.data?.log;
+
+      if (!newLog?._id) {
+        throw new Error('Upload succeeded but no log identifier was returned.');
+      }
+
+      setUploadStatus('2/2 Analyzing log with Isolation Forest ML model...');
+      const analyzeRes = await api.post(`/logs/${newLog._id}/analyze`);
+      const result = analyzeRes.data?.result;
+
+      showToast(
+        `✓ Analyzed: ${result?.is_anomaly ? '⚠️ Anomaly Detected' : '✓ Normal Traffic'} (Score: ${Number(result?.anomaly_score || 0).toFixed(3)})`,
+        result?.is_anomaly ? 'warning' : 'success'
+      );
+
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+
+      // Immediately navigate to MLAnalysis to inspect results
+      navigate(`/ml-analysis?logId=${newLog._id}`);
+    } catch (err) {
+      showToast('Process failed: ' + (err.response?.data?.message || err.message), 'warning');
+      setUploadStatus('');
     } finally {
-      setDeletingId(null);
+      setUploading(false);
     }
   };
 
+  // Run analysis directly on any row in the table
+  const handleAnalyzeRow = async (logId, logName) => {
+    try {
+      setAnalyzingRowId(logId);
+      const res = await api.post(`/logs/${logId}/analyze`);
+      const result = res.data?.result;
+
+      showToast(
+        `✓ "${logName}" analyzed: ${result?.is_anomaly ? '⚠️ Anomaly Detected' : '✓ Normal'} (Score: ${Number(result?.anomaly_score || 0).toFixed(3)})`,
+        result?.is_anomaly ? 'warning' : 'success'
+      );
+
+      setLogs((prev) =>
+        prev.map((l) =>
+          l._id === logId
+            ? {
+                ...l,
+                analysisStatus: 'analyzed',
+                isAnomaly: result?.is_anomaly,
+                anomalyScore: result?.anomaly_score,
+                severity: result?.severity,
+                analysisResult: {
+                  summary: result?.summary,
+                  total_lines_analyzed: result?.total_lines_analyzed,
+                },
+              }
+            : l
+        )
+      );
+    } catch (err) {
+      showToast('Analysis error: ' + (err.response?.data?.message || err.message), 'warning');
+    } finally {
+      setAnalyzingRowId(null);
+    }
+  };
+
+  // Quick sample log loader
+  const handleLoadSample = async (type) => {
+    const preset = SAMPLE_PRESETS[type];
+    if (!preset) return;
+
+    try {
+      setUploadStatus('');
+      await api.post('/logs/preset', {
+        presetId: preset.id,
+        fileName: preset.fileName,
+        fileType: preset.fileType,
+        sampleLines: preset.sampleLines,
+        isAnomaly: preset.isAnomaly,
+        severity: preset.isAnomaly ? 'high' : 'none',
+        linesCount: preset.linesCount,
+      });
+
+      setUploadStatus('Successfully uploaded');
+      showToast(`✓ "${preset.title}" added to your logs!`);
+      fetchLogs();
+    } catch (err) {
+      showToast('Could not load sample log: ' + (err.response?.data?.message || err.message), 'warning');
+    }
+  };
+
+  // Delete log from database
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Delete "${name}"?`)) return;
+
+    try {
+      await api.delete(`/logs/${id}`);
+      setLogs((prev) => prev.filter((l) => l._id !== id));
+      showToast(`Deleted "${name}".`, 'info');
+    } catch (err) {
+      showToast('Failed to delete log: ' + (err.response?.data?.message || err.message), 'warning');
+    }
+  };
+
+  // Filter logs by search query
+  const filteredLogs = logs.filter((l) =>
+    (l.originalName || '').toLowerCase().includes(searchFilter.toLowerCase())
+  );
+
   return (
-    <div className="lu-content">
-      <div className="lu-header">
-        <h1>Log Upload</h1>
-        <p>Upload security logs for analysis and anomaly detection</p>
+    <div className="lu-page-root">
+      {/* Toast Notifications */}
+      <div className="green-dash-toast-container">
+        {toasts.map((t) => (
+          <div key={t.id} className={`green-dash-toast ${t.type}`}>
+            <span className="green-dash-toast-dot" />
+            <span>{t.msg}</span>
+          </div>
+        ))}
       </div>
 
-      <div className="lu-layout">
-        <div className="lu-left">
-          <div className="lu-upload-section">
-            <div
-              ref={dropRef}
-              className={`lu-dropzone ${isDragOver ? 'drag-over' : ''} ${selectedFile ? 'has-file' : ''}`}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onClick={() => !selectedFile && fileInputRef.current?.click()}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".log,.txt,.csv"
-                onChange={handleInputChange}
-                className="lu-file-input"
-              />
+      <div className="lu-container">
+        {/* Header Bar */}
+        <header className="lu-header-bar">
+          <div>
+            <h1 className="lu-header-title">Log Upload</h1>
+            <p className="ml-page-sub">
+              Upload server logs to detect anomalies
+            </p>
+          </div>
 
-              {!selectedFile ? (
-                <div className="lu-dropzone-content">
-                  <div className="lu-dropzone-icon">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="17 8 12 3 7 8" />
-                      <line x1="12" y1="3" x2="12" y2="15" />
-                    </svg>
-                  </div>
-                  <p className="lu-dropzone-title">Drop security logs here</p>
-                  <p className="lu-dropzone-sub">or browse files from your computer</p>
-                  <p className="lu-dropzone-formats">Accepted: .log, .txt, .csv (max 50MB)</p>
-                </div>
-              ) : (
-                <div className="lu-selected-file">
-                  <div className="lu-file-icon">
-                    {getFileIcon('.' + selectedFile.name.split('.').pop().toLowerCase())}
-                  </div>
-                  <div className="lu-file-info">
-                    <span className="lu-file-name">{selectedFile.name}</span>
-                    <span className="lu-file-meta">
-                      {'.' + selectedFile.name.split('.').pop().toUpperCase()} &middot; {formatFileSize(selectedFile.size)}
-                    </span>
-                  </div>
-                  <button
-                    className="lu-file-remove"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveFile();
-                    }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {uploadError && (
-              <div className="lu-error">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="15" y1="9" x2="9" y2="15" />
-                  <line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
-                <span>{uploadError}</span>
-              </div>
-            )}
-
-            {uploadSuccess && (
-              <div className="lu-success">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-                <span>Log uploaded successfully</span>
-              </div>
-            )}
-
+          <div className="lu-header-actions">
             <button
-              className="lu-btn"
-              disabled={!selectedFile || uploading}
-              onClick={handleUpload}
+              className="lu-btn-secondary"
+              onClick={() => handleLoadSample('normal')}
+              title="Add a sample normal activity log"
             >
-              {uploading ? (
-                <>
-                  <span className="lu-spinner" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  Upload Log
-                </>
-              )}
+              <span>+ Load Normal Sample</span>
+            </button>
+            <button
+              className="lu-btn-secondary"
+              onClick={() => handleLoadSample('anomaly')}
+              title="Add a sample log containing failed login attempts"
+            >
+              <span>+ Load Anomaly Sample</span>
             </button>
           </div>
-        </div>
+        </header>
 
-        <div className="lu-right">
-          <div className="lu-history">
-            <div className="lu-history-header">
-              <h2>Upload History</h2>
-              <span className="lu-history-count">{logs.length} files</span>
+        {/* MAIN UPLOAD CONTAINER */}
+        <section className="lu-card lu-dropzone-card">
+          <div className="lu-card-header">
+            <div>
+              <h3>Upload Log File</h3>
+              <span className="lu-card-sub">Supported formats: .log, .txt, .csv</span>
+            </div>
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".log,.txt,.csv"
+            className="lu-hidden-input"
+            onChange={handleInputChange}
+          />
+
+          {/* Select / drag file zone */}
+          <div
+            className={`lu-dropzone ${isDragOver ? 'dragover' : ''}`}
+            onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+            onDragLeave={() => setIsDragOver(false)}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <div style={{ fontSize: '36px', marginBottom: '10px' }}>📁</div>
+            <h4 style={{ margin: '0 0 6px 0', fontSize: '15px', color: 'var(--lu-text-main)' }}>
+              {selectedFile ? selectedFile.name : 'Select or drag a log file here'}
+            </h4>
+            <p style={{ margin: 0, fontSize: '12px', color: 'var(--lu-text-muted)' }}>
+              {selectedFile
+                ? `${(selectedFile.size / 1024).toFixed(1)} KB`
+                : 'Click to browse files (.log, .txt, .csv)'}
+            </p>
+          </div>
+
+          {/* Selected File Details & Upload Button */}
+          {selectedFile && (
+            <div style={{ background: '#f8faf9', border: '1px solid #e8f1ed', borderRadius: '12px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: '14px', fontWeight: '700', color: '#0c3631' }}>
+                  File Name: {selectedFile.name}
+                </div>
+                <div style={{ fontSize: '12px', color: '#526b65', marginTop: '2px' }}>
+                  File Size: {(selectedFile.size / 1024).toFixed(1)} KB
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  className="green-dash-btn-primary"
+                  onClick={handleUploadAndAnalyze}
+                  disabled={uploading}
+                  style={{ background: 'linear-gradient(135deg, #0c3631, #00d68f)' }}
+                >
+                  {uploading ? (uploadStatus || 'Processing...') : '⚡ Upload & Analyze Immediately'}
+                </button>
+                <button
+                  className="lu-btn-secondary"
+                  onClick={handleUpload}
+                  disabled={uploading}
+                >
+                  Upload Only
+                </button>
+                <button
+                  className="lu-btn-secondary"
+                  onClick={() => { setSelectedFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                  disabled={uploading}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Upload Status */}
+          {uploadStatus && (
+            <div style={{ background: '#e6f9f2', border: '1px solid #c3edd9', borderRadius: '10px', padding: '12px 16px', color: '#059669', fontSize: '13.5px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>✓</span>
+              <span>{uploadStatus}</span>
+            </div>
+          )}
+        </section>
+
+        {/* UPLOADED LOGS TABLE CONTAINER */}
+        <section className="lu-card">
+          <div className="lu-card-header" style={{ marginBottom: '16px' }}>
+            <div>
+              <h3>Uploaded Logs ({logs.length})</h3>
+              <span className="lu-card-sub">Existing log files stored in database</span>
             </div>
 
-            {loadingLogs ? (
-              <div className="lu-history-loading">
-                <span className="lu-spinner" />
-              </div>
-            ) : logs.length === 0 ? (
-              <div className="lu-history-empty">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                </svg>
-                <p>No security logs uploaded yet</p>
-                <span>Upload your first log file to begin analysis.</span>
-              </div>
-            ) : (
-              <div className="lu-history-list">
-                {logs.map((log) => {
-                  const statusConf = getStatusConfig(log.status);
-                  return (
-                    <div key={log._id} className="lu-history-item">
-                      <div className="lu-history-icon">
-                        {getFileIcon(log.fileType)}
-                      </div>
-                      <div className="lu-history-details">
-                        <span className="lu-history-name">{log.originalName}</span>
-                        <span className="lu-history-meta">
-                          {log.fileType.toUpperCase()} &middot; {formatFileSize(log.fileSize)} &middot; {formatDate(log.createdAt)}
-                        </span>
-                      </div>
-                      <span className={`lu-history-status ${statusConf.className}`}>
-                        {statusConf.label}
-                      </span>
-                      <button
-                        className="lu-history-delete"
-                        onClick={() => handleDelete(log._id)}
-                        disabled={deletingId === log._id}
-                      >
-                        {deletingId === log._id ? (
-                          <span className="lu-spinner-sm" />
-                        ) : (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                          </svg>
-                        )}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <input
+                type="text"
+                placeholder="Search logs by name..."
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                style={{
+                  background: '#f4f8f6',
+                  border: '1px solid #c9dfd5',
+                  borderRadius: '10px',
+                  padding: '8px 14px',
+                  fontSize: '12px',
+                  color: '#0c3631',
+                  outline: 'none',
+                }}
+              />
+            </div>
           </div>
-        </div>
+
+          {loadingLogs ? (
+            <div style={{ textAlign: 'center', padding: '36px 0', color: '#526b65' }}>
+              <div className="ml-spinner" style={{ margin: '0 auto 12px auto' }} />
+              <span>Loading logs...</span>
+            </div>
+          ) : filteredLogs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: '#839b95' }}>
+              <div style={{ fontSize: '32px', marginBottom: '8px' }}>📂</div>
+              <h4 style={{ margin: '0 0 6px 0', color: '#0c3631' }}>No logs found</h4>
+              <p style={{ margin: 0, fontSize: '13px' }}>
+                Upload a log file above to get started.
+              </p>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #e8f1ed', color: '#526b65', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <th style={{ padding: '12px 14px' }}>File Name</th>
+                    <th style={{ padding: '12px 14px' }}>File Size</th>
+                    <th style={{ padding: '12px 14px' }}>Upload Date</th>
+                    <th style={{ padding: '12px 14px' }}>ML Status</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLogs.map((log) => {
+                    const isAnalyzed = log.analysisStatus === 'analyzed';
+                    const isAnomaly = log.isAnomaly;
+                    const dateStr = log.createdAt
+                       ? new Date(log.createdAt).toLocaleDateString()
+                      : 'Today';
+
+                    return (
+                      <tr
+                        key={log._id}
+                        style={{ borderBottom: '1px solid #f0f5f2' }}
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f8faf9')}
+                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                      >
+                        <td style={{ padding: '14px', fontWeight: '700', color: '#0c3631' }}>
+                          <span style={{ marginRight: '8px' }}>📄</span>
+                          {log.originalName}
+                        </td>
+                        <td style={{ padding: '14px', color: '#526b65' }}>
+                          {log.fileSize ? `${(log.fileSize / 1024).toFixed(1)} KB` : 'N/A'}
+                        </td>
+                        <td style={{ padding: '14px', color: '#839b95', fontSize: '12px' }}>
+                          {dateStr}
+                        </td>
+                        <td style={{ padding: '14px' }}>
+                          {isAnalyzed ? (
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: '700',
+                                backgroundColor: isAnomaly ? '#ffedd5' : '#e6f9f2',
+                                color: isAnomaly ? '#c2410c' : '#059669',
+                              }}
+                            >
+                              {isAnomaly ? 'Anomaly' : 'Normal'}
+                            </span>
+                          ) : (
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: '700',
+                                backgroundColor: '#f1f5f9',
+                                color: '#64748b',
+                              }}
+                            >
+                              Ready
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '14px', textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', gap: '8px' }}>
+                            {isAnalyzed ? (
+                              <button
+                                className="green-dash-btn-primary"
+                                onClick={() => navigate(`/ml-analysis?logId=${log._id}`)}
+                                style={{ padding: '6px 14px', fontSize: '12px' }}
+                              >
+                                View Result
+                              </button>
+                            ) : (
+                              <button
+                                className="green-dash-btn-primary"
+                                onClick={() => handleAnalyzeRow(log._id, log.originalName)}
+                                disabled={analyzingRowId === log._id}
+                                style={{
+                                  padding: '6px 14px',
+                                  fontSize: '12px',
+                                  background: 'linear-gradient(135deg, #0c3631, #00d68f)',
+                                }}
+                              >
+                                {analyzingRowId === log._id ? 'Analyzing...' : '⚡ Analyze Now'}
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDelete(log._id, log.originalName)}
+                              title="Delete log"
+                              style={{
+                                background: '#fff',
+                                border: '1px solid #fecdd3',
+                                color: '#e11d48',
+                                borderRadius: '8px',
+                                padding: '6px 10px',
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                              }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

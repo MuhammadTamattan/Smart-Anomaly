@@ -1,0 +1,29 @@
+# ==============================================================================
+# DEMO SYNTHETIC LOG DATA - SRI SATHYA SARAVANA MOTOR AND PUMPS
+# SCENARIO: Excessive File Access (Bulk Data Exfiltration / Rapid Download Burst)
+# NOTE: Synthetic demonstration telemetry for Smart Anomaly Detection ML Testing
+# ==============================================================================
+2026-09-22T14:02:01.010Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/engineering/cad/SS-Openwell-150-Casing.dwg HTTP/1.1" 200 4829100 "File downloaded successfully by EMP103"
+2026-09-22T14:02:03.140Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/engineering/cad/SS-Openwell-150-Impeller.dwg HTTP/1.1" 200 3914800 "File downloaded successfully by EMP103"
+2026-09-22T14:02:05.220Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/engineering/cad/SS-Submersible-V4-Rotor.dwg HTTP/1.1" 200 5120400 "File downloaded successfully by EMP103"
+2026-09-22T14:02:07.410Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/engineering/cad/SS-Submersible-V4-Stator.dwg HTTP/1.1" 200 4410900 "File downloaded successfully by EMP103"
+2026-09-22T14:02:09.550Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/engineering/cad/SS-Deepwell-V6-Stage-Diffuser.dwg HTTP/1.1" 200 6210000 "File downloaded successfully by EMP103"
+2026-09-22T14:02:11.710Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/engineering/cad/SS-Monobloc-2HP-Shaft-Spec.dwg HTTP/1.1" 200 3105000 "File downloaded successfully by EMP103"
+2026-09-22T14:02:13.820Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/engineering/bom/SS-Series-Complete-BOM.xlsx HTTP/1.1" 200 1820400 "File downloaded successfully by EMP103"
+2026-09-22T14:02:15.910Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/engineering/foundry/CastIron-Grade-FG200-FoundryMolds.pdf HTTP/1.1" 200 8920100 "File downloaded successfully by EMP103"
+2026-09-22T14:02:18.020Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/engineering/cnc/GCode-Lathe-Shaft-Machining.nc HTTP/1.1" 200 940300 "File downloaded successfully by EMP103"
+2026-09-22T14:02:20.150Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/procurement/Copper-Winding-Vendor-Contracts.pdf HTTP/1.1" 200 4210900 "File downloaded successfully by EMP103"
+2026-09-22T14:02:22.280Z [INFO] 192.168.1.60 EMP103 "GET /api/erp/files/procurement/Stainless-Steel-304-Fasteners-Pricing.xlsx HTTP/1.1" 200 1120400 "File downloaded successfully by EMP103"
+2026-09-22T14:02:24.410Z [WARN] 192.168.1.60 EMP103 "GET /api/erp/files/qc/Hydrostatic-Test-Calibration-Certificates.pdf HTTP/1.1" 200 5840200 "Warning: High volume file retrieval burst detected: 12 files within 25 seconds"
+2026-09-22T14:02:26.540Z [WARN] 192.168.1.60 EMP103 "GET /api/erp/files/warranty/Agriculture-Pumps-Customer-DB.csv HTTP/1.1" 200 12450100 "Warning: Storage threshold exceeded: rapid sequential file download burst"
+2026-09-22T14:02:28.690Z [WARN] 192.168.1.60 EMP103 "GET /api/erp/files/rnd/Solar-Submersible-Pump-Controller-Firmware.hex HTTP/1.1" 200 890400 "Warning: Client 192.168.1.60 approaching per-minute file limit"
+2026-09-22T14:02:30.810Z [WARN] 192.168.1.60 EMP103 "GET /api/erp/files/rnd/Permanent-Magnet-Brushless-Motor-Schematic.pdf HTTP/1.1" 429 320 "Rate limit warning: User EMP103 exceeded 15 files/min threshold"
+2026-09-22T14:02:32.950Z [ERROR] 192.168.1.60 EMP103 "GET /api/erp/files/archive/All-Motors-Production-Records-2025.zip HTTP/1.1" 429 280 "Too many requests: Rate limit hit, bulk export throttled"
+2026-09-22T14:02:35.110Z [ERROR] 192.168.1.60 EMP103 "GET /api/erp/files/archive/All-Motors-Production-Records-2026.zip HTTP/1.1" 429 280 "Too many requests: Rate limit enforced, connection throttled"
+2026-09-22T14:02:37.240Z [ERROR] 192.168.1.60 EMP103 "GET /api/erp/files/archive/Foundry-Core-Box-Tooling-Designs.zip HTTP/1.1" 429 280 "Too many requests: Rate limit policy violation for user EMP103"
+2026-09-22T14:02:39.380Z [ERROR] 192.168.1.60 EMP103 "GET /api/erp/files/archive/Domestic-Pumps-Dealer-Network-List.xlsx HTTP/1.1" 403 410 "Access denied: Account temporarily locked due to excessive file exfiltration rate"
+2026-09-22T14:02:41.520Z [ERROR] 192.168.1.60 EMP103 "GET /api/erp/files/archive/Financial-Audit-Report-FY2025.pdf HTTP/1.1" 429 280 "Too many requests: rate limit block active"
+2026-09-22T14:02:43.650Z [ERROR] 192.168.1.60 EMP103 "GET /api/erp/files/archive/Submersible-Winding-Automation-Script.py HTTP/1.1" 429 280 "Too many requests: connection throttled"
+2026-09-22T14:02:45.780Z [ERROR] 192.168.1.60 EMP103 "GET /api/erp/files/archive/Coimbatore-Distributor-List.csv HTTP/1.1" 429 280 "Rate limit exceeded: bulk download refused"
+2026-09-22T14:02:47.910Z [ERROR] 192.168.1.60 EMP103 "GET /api/erp/files/archive/Raw-Silicon-Steel-Procurement-Rates.xlsx HTTP/1.1" 429 280 "Too many requests: client suspended"
+2026-09-22T14:02:49.020Z [WARN] 192.168.1.60 EMP103 "POST /api/erp/auth/logout HTTP/1.1" 200 140 "Session interrupted by security guard: Excessive file retrieval policy triggered"

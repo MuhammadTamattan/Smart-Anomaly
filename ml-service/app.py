@@ -1,4 +1,4 @@
-﻿import os
+import os
 import re
 import json
 import logging
@@ -348,27 +348,52 @@ def predict():
 
         features_scaled = scaler.transform(features)
         prediction = model.predict(features_scaled)
-        anomaly_score = model.decision_function(features_scaled)[0]
+        raw_score = float(model.decision_function(features_scaled)[0])
 
-        is_anomaly = prediction[0] == -1
-        severity = get_severity(anomaly_score)
-        summary = generate_summary(is_anomaly, severity, anomaly_score, FEATURE_NAMES, features[0].tolist())
+        has_cyber_indicators = (
+            failed_auth > 2 or
+            sql_keywords > 0 or
+            shell_keywords > 0 or
+            port_scan_suspicious > 0 or
+            rate_limit_hits > 2 or
+            (error_count > 3 and total_lines <= 20)
+        )
+
+        is_anomaly = bool(prediction[0] == -1 or raw_score < 0 or has_cyber_indicators)
+
+        if is_anomaly:
+            if sql_keywords > 0 or shell_keywords > 0 or failed_auth > 10:
+                severity = "critical"
+                normalized_score = 0.94
+            elif failed_auth > 2 or port_scan_suspicious > 0 or rate_limit_hits > 2:
+                severity = "high"
+                normalized_score = 0.86
+            elif raw_score < -0.2 or error_count > 3:
+                severity = "medium"
+                normalized_score = 0.72
+            else:
+                severity = "medium"
+                normalized_score = 0.65
+        else:
+            severity = "low"
+            normalized_score = round(float(max(0.01, min(0.2, 0.08 - raw_score * 0.1))), 4)
+
+        summary = generate_summary(is_anomaly, severity, normalized_score, FEATURE_NAMES, features[0].tolist())
 
         feature_importance = {}
         for i, name in enumerate(FEATURE_NAMES):
             feature_importance[name] = round(float(features[0][i]), 4)
 
         result = {
-            "is_anomaly": bool(is_anomaly),
-            "anomaly_score": round(float(anomaly_score), 4),
+            "is_anomaly": is_anomaly,
+            "anomaly_score": normalized_score,
             "severity": severity,
             "summary": summary,
             "total_lines_analyzed": len(log_lines),
             "feature_importance": feature_importance,
         }
 
-        logger.info(f"Prediction: is_anomaly={is_anomaly}, score={anomaly_score:.4f}, severity={severity}")
-        logger.info(f"Feature importance: {json.dumps(feature_importance, indent=2)}")
+        logger.info(f"Prediction: is_anomaly={is_anomaly}, score={normalized_score:.4f}, severity={severity}")
         return jsonify(result)
 
     except Exception as e:

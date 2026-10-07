@@ -1,0 +1,15 @@
+# ==============================================================================
+# DEMO SYNTHETIC LOG DATA - SRI SATHYA SARAVANA MOTOR AND PUMPS
+# SCENARIO: Unusual Employee Login (Off-Hours 02:40 AM & Unauthorized Access)
+# NOTE: Synthetic demonstration telemetry for Smart Anomaly Detection ML Testing
+# ==============================================================================
+2026-09-22T02:38:12.110Z [WARN] 198.51.100.77 EMP105 "POST /api/erp/auth/login HTTP/1.1" 200 512 "User Venkatesh (EMP105) off-hours login from unmapped external IP 198.51.100.77"
+2026-09-22T02:40:05.420Z [INFO] 198.51.100.77 EMP105 "GET /api/erp/portal/dashboard HTTP/1.1" 200 1420 "Active session established outside standard shift hours at 02:40 AM"
+2026-09-22T02:41:18.910Z [WARN] 198.51.100.77 EMP105 "GET /api/erp/engineering/cad/blueprints?model=SS-DeepWell-V6 HTTP/1.1" 403 620 "Access denied: EMP105 unauthorized for R&D confidential pump drawings"
+2026-09-22T02:42:04.305Z [ERROR] 198.51.100.77 EMP105 "GET /api/erp/database/query?sql=SELECT+*+FROM+motor_stamping_dies+WHERE+rev=4 HTTP/1.1" 403 540 "Permission refused: unauthorized SELECT query blocked by ERP security filter"
+2026-09-22T02:43:22.780Z [WARN] 198.51.100.77 EMP105 "GET /api/erp/financials/costing-sheets/2026 HTTP/1.1" 403 510 "Access denied: ERP financial pricing module restricted for maintenance role"
+2026-09-22T02:44:40.120Z [ERROR] 198.51.100.77 EMP105 "POST /api/erp/admin/user-privileges/escalate HTTP/1.1" 403 480 "Privilege escalation rejected: admin authorization denied"
+2026-09-22T02:45:15.650Z [ERROR] 198.51.100.77 EMP105 "POST /api/erp/database/raw?exec=UPDATE+user_permissions+SET+role='admin' HTTP/1.1" 403 320 "Access denied: unauthorized SQL UPDATE statement rejected"
+2026-09-22T02:46:01.210Z [WARN] 198.51.100.77 EMP105 "GET /api/erp/scada/plc-controllers/override HTTP/1.1" 403 590 "Command rejected: Submersible pump assembly line PLC override rejected"
+2026-09-22T02:47:30.840Z [ERROR] 198.51.100.77 EMP105 "GET /api/erp/backup/export.sql?action=dump HTTP/1.1" 404 420 "Resource extraction fail: unauthorized backup export denied"
+2026-09-22T02:48:10.015Z [WARN] 198.51.100.77 EMP105 "POST /api/erp/auth/logout HTTP/1.1" 200 180 "Session terminated after security anomaly alert triggered"
