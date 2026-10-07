@@ -165,7 +165,11 @@ export default function AppLayout() {
             >
               <div className="aeux-avatar-wrap">
                 <div className="aeux-avatar-img">
-                  👨‍💻
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt={user.name || 'User'} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    '👨‍💻'
+                  )}
                 </div>
               </div>
               <div className="aeux-user-info">

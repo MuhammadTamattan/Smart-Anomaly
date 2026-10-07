@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'smart_anomaly_detection_jwt_secret_2026';
+
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  return jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });
 };
 
 export const register = async (req, res, next) => {
@@ -75,6 +77,8 @@ export const getProfile = async (req, res, next) => {
       analystId: user.analystId || '#stu-2026',
       clearance: user.clearance || 'Standard Access',
       timezone: user.timezone || 'UTC +05:30 (Indian Standard Time)',
+      avatar: user.avatar || '',
+      bio: user.bio || 'Cyber Threat Intelligence & Anomaly Detection Specialist.',
       notifications: user.notifications || {
         notifyP1: true,
         notifyDrift: true,
@@ -104,6 +108,8 @@ export const updateProfile = async (req, res, next) => {
       analystId,
       clearance,
       timezone,
+      avatar,
+      bio,
       notifications,
     } = req.body;
 
@@ -122,6 +128,8 @@ export const updateProfile = async (req, res, next) => {
     if (analystId !== undefined) user.analystId = analystId.trim();
     if (clearance !== undefined) user.clearance = clearance.trim();
     if (timezone !== undefined) user.timezone = timezone.trim();
+    if (avatar !== undefined) user.avatar = avatar;
+    if (bio !== undefined) user.bio = bio.trim();
     if (notifications !== undefined) {
       user.notifications = {
         ...(user.notifications?.toObject?.() || {}),
@@ -143,6 +151,8 @@ export const updateProfile = async (req, res, next) => {
       analystId: user.analystId,
       clearance: user.clearance,
       timezone: user.timezone,
+      avatar: user.avatar || '',
+      bio: user.bio || '',
       notifications: user.notifications,
       message: 'Profile operational changes saved successfully',
     });

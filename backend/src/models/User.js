@@ -58,6 +58,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'UTC +05:30 (Indian Standard Time)',
     },
+    avatar: {
+      type: String,
+      default: '',
+    },
+    bio: {
+      type: String,
+      default: 'Cyber Threat Intelligence & Anomaly Detection Specialist.',
+    },
     notifications: {
       notifyP1: { type: Boolean, default: true },
       notifyDrift: { type: Boolean, default: true },
