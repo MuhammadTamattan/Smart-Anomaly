@@ -29,7 +29,7 @@
   background: rgba(12, 54, 49, 0.85);
   border: 1px solid rgba(0, 214, 143, 0.28);
   border-radius: 26px;
-  padding: 40px 48px;
+  padding: 38px 46px;
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.45),
     0 0 50px rgba(0, 214, 143, 0.08),
@@ -38,20 +38,41 @@
   -webkit-backdrop-filter: blur(16px);
   display: flex;
   flex-direction: column;
+  animation: registerCardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.register-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(0, 214, 143, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset;
+}
+
+@keyframes registerCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .register-brand {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 24px;
-  padding-bottom: 18px;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
   border-bottom: 1px solid rgba(0, 214, 143, 0.16);
 }
 
 .register-logo {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,11 +81,21 @@
   border-radius: 12px;
   border: 1px solid rgba(0, 214, 143, 0.32);
   flex-shrink: 0;
+  animation: registerLogoBreath 4s ease-in-out infinite alternate;
+}
+
+@keyframes registerLogoBreath {
+  0% {
+    box-shadow: 0 0 0 rgba(0, 214, 143, 0);
+  }
+  100% {
+    box-shadow: 0 0 16px rgba(0, 214, 143, 0.35);
+  }
 }
 
 .register-logo svg {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
 }
 
 .register-brand-text {
@@ -75,7 +106,7 @@
 
 .register-brand-title {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.2;
@@ -95,7 +126,7 @@
 }
 
 .register-welcome {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .register-heading {
@@ -123,7 +154,7 @@
   color: #fca5a5;
   padding: 10px 14px;
   border-radius: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   font-size: 12px;
   border: 1px solid rgba(239, 68, 68, 0.3);
   text-align: center;
@@ -132,7 +163,7 @@
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 13px;
   flex: 1;
 }
 
@@ -204,7 +235,7 @@
 .register-field input {
   width: 100%;
   height: 44px;
-  padding: 0 50px 0 46px;
+  padding: 0 48px 0 46px;
   background: rgba(6, 26, 23, 0.85);
   border: 1px solid rgba(0, 214, 143, 0.22);
   border-radius: 10px;
@@ -237,7 +268,7 @@
 .register-btn {
   width: 100%;
   height: 46px;
-  margin-top: 6px;
+  margin-top: 4px;
   background: #00d68f;
   color: #072521;
   border: none;
@@ -275,16 +306,16 @@
   border: 2px solid rgba(7, 37, 33, 0.3);
   border-top-color: #072521;
   border-radius: 50%;
-  animation: spin 0.6s linear infinite;
+  animation: registerSpin 0.6s linear infinite;
 }
 
-@keyframes spin {
+@keyframes registerSpin {
   to { transform: rotate(360deg); }
 }
 
 .register-footer {
-  margin-top: 18px;
-  padding-top: 16px;
+  margin-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid rgba(0, 214, 143, 0.15);
   font-size: 13px;
   color: #8faea5;
@@ -315,192 +346,132 @@
   overflow: hidden;
 }
 
-/* Ambient Lighting Cones (Mix of Green and Crisp White) */
-.login-visual-ambient-green {
+/* Concentric Radar Ring Wave Animation */
+.register-image-section::before {
+  content: '';
   position: absolute;
-  width: 550px;
-  height: 550px;
+  width: 380px;
+  height: 380px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 214, 143, 0.22) 0%, rgba(12, 54, 49, 0.4) 40%, transparent 70%);
-  filter: blur(50px);
+  border: 1.5px solid rgba(0, 214, 143, 0.35);
+  animation: registerRadarRingPulse 4.5s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
   pointer-events: none;
   z-index: 1;
 }
 
-.login-visual-ambient-white {
+.register-image-section::after {
+  content: '';
   position: absolute;
-  top: 20%;
-  right: 15%;
-  width: 320px;
-  height: 320px;
+  width: 480px;
+  height: 480px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 50%, transparent 75%);
-  filter: blur(40px);
+  border: 1px dashed rgba(0, 214, 143, 0.2);
+  animation: registerRotateRadarDash 36s linear infinite;
   pointer-events: none;
-  z-index: 2;
+  z-index: 1;
 }
 
-/* Faint Background Texture */
-.login-image-bg-texture {
+@keyframes registerRadarRingPulse {
+  0% {
+    transform: scale(0.65);
+    opacity: 0.9;
+  }
+  80% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+@keyframes registerRotateRadarDash {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.register-image-glow {
   position: absolute;
-  width: 80%;
-  max-width: 500px;
-  height: auto;
-  opacity: 0.16;
-  filter: grayscale(1) contrast(1.2);
-  mix-blend-mode: screen;
+  width: 540px;
+  height: 540px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 214, 143, 0.45) 0%, rgba(12, 54, 49, 0.55) 45%, transparent 70%);
+  filter: blur(55px);
   pointer-events: none;
-  z-index: 2;
+  z-index: 1;
+  animation: registerPulseGreenGlow 6s ease-in-out infinite alternate;
 }
 
-/* Central Interactive Stage */
-.login-visual-stage {
+@keyframes registerPulseGreenGlow {
+  from { transform: scale(0.94); opacity: 0.8; }
+  to { transform: scale(1.06); opacity: 1; }
+}
+
+.register-image {
+  width: 85%;
+  max-width: 520px;
+  height: 85%;
+  max-height: 85%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
   position: relative;
-  z-index: 5;
-  width: 440px;
-  height: 440px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 2;
+  filter: sepia(100%) hue-rotate(85deg) saturate(280%) brightness(95%) contrast(110%);
+  mix-blend-mode: screen;
+  animation: registerCyberFloat 5.5s ease-in-out infinite alternate;
 }
 
-/* Shield Centerpiece */
-.login-shield-graphic {
-  width: 200px;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.35));
-  animation: gentlePulse 6s ease-in-out infinite alternate;
+@keyframes registerCyberFloat {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) scale(1.015);
+  }
+  100% {
+    transform: translateY(4px) scale(0.995);
+  }
 }
 
-.login-shield-svg {
-  width: 100%;
-  height: 100%;
-}
-
-@keyframes gentlePulse {
-  from { transform: scale(0.97); }
-  to { transform: scale(1.03); }
-}
-
-/* Floating Crisp White Telemetry Cards */
-.login-float-card {
+.register-scan-beam {
   position: absolute;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(12, 54, 49, 0.08);
-  border: 1px solid rgba(232, 241, 237, 0.9);
-  z-index: 6;
-  animation: floatDrift 5s ease-in-out infinite alternate;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 214, 143, 0.6) 50%, transparent 100%);
+  box-shadow: 0 0 15px rgba(0, 214, 143, 0.8);
+  top: 15%;
+  left: 0;
+  z-index: 3;
+  pointer-events: none;
+  animation: registerScanSweep 6s ease-in-out infinite;
+  opacity: 0.7;
 }
 
-@keyframes floatDrift {
-  0% { transform: translateY(0px); }
-  100% { transform: translateY(-8px); }
+@keyframes registerScanSweep {
+  0% {
+    top: 15%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.75;
+  }
+  85% {
+    opacity: 0.75;
+  }
+  100% {
+    top: 85%;
+    opacity: 0;
+  }
 }
 
-.card-top-right {
-  top: 30px;
-  right: -20px;
-  animation-delay: 0.4s;
-}
-
-.card-bottom-left {
-  bottom: 35px;
-  left: -25px;
-  animation-delay: 1.2s;
-}
-
-.card-bottom-right {
-  bottom: 20px;
-  right: 0px;
-  animation-delay: 2s;
-}
-
-.float-card-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.float-card-dot.mint {
-  background: #00d68f;
-  box-shadow: 0 0 8px rgba(0, 214, 143, 0.6);
-}
-
-.float-card-dot.white {
-  background: #0c3631;
-}
-
-.float-card-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.float-card-lbl {
-  font-size: 9px;
-  font-weight: 800;
-  color: #526b65;
-  letter-spacing: 0.6px;
-}
-
-.float-card-val {
-  font-size: 13px;
-  font-weight: 800;
-  color: #0c3631;
-}
-
-.float-card-pill {
-  font-size: 9px;
-  font-weight: 800;
-  color: #0c3631;
-  background: #e6f9f2;
-  padding: 3px 7px;
-  border-radius: 5px;
-}
-
-.float-card-badge {
-  font-size: 9px;
-  font-weight: 800;
-  color: #ffffff;
-  background: #0c3631;
-  padding: 3px 8px;
-  border-radius: 5px;
-}
-
-.float-card-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 3px;
-  height: 20px;
-  margin-left: 4px;
-}
-
-.mini-bar {
-  width: 3px;
-  background: #00d68f;
-  border-radius: 2px;
-}
-
-.mini-bar.h40 { height: 40%; background: #0c3631; }
-.mini-bar.h55 { height: 55%; background: #0c3631; }
-.mini-bar.h70 { height: 70%; background: #00d68f; }
-.mini-bar.h90 { height: 90%; background: #00d68f; }
-
-.login-image-overlay {
+.register-image-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, #061f1c 0%, transparent 15%, transparent 85%, #061f1c 100%);
   pointer-events: none;
-  z-index: 8;
+  z-index: 4;
 }
 
 @media (max-width: 1200px) {
@@ -517,13 +488,21 @@
 
   .register-card {
     max-width: 460px;
-    padding: 36px;
+    padding: 34px 38px;
+  }
+
+  .register-image {
+    width: 90%;
+    height: 90%;
   }
 }
 
 @media (max-width: 900px) {
   .register-page {
     flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
   }
 
   .register-panel {
@@ -565,7 +544,128 @@
   }
 
   .register-card {
-    padding: 28px 20px;
+    padding: 26px 18px;
     border-radius: 20px;
+  }
+
+  .register-brand {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+  }
+
+  .register-brand-title {
+    font-size: 22px;
+  }
+
+  .register-heading {
+    font-size: 24px;
+  }
+
+  .register-field input {
+    height: 42px;
+    padding: 0 44px 0 42px;
+  }
+
+  .password-toggle {
+    width: 34px;
+    height: 34px;
+  }
+
+  .register-btn {
+    height: 44px;
+  }
+
+  .register-footer {
+    margin-top: 14px;
+    padding-top: 12px;
+  }
+
+  .register-image-section {
+    min-height: 200px;
+    max-height: 30vh;
+  }
+
+  .register-image {
+    width: 80%;
+    height: 80%;
+  }
+}
+
+@media (max-height: 850px) {
+  .register-card {
+    padding: 28px 36px;
+  }
+
+  .register-brand {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  .register-welcome {
+    margin-bottom: 14px;
+  }
+
+  .register-form {
+    gap: 10px;
+  }
+
+  .register-field input {
+    height: 40px;
+  }
+
+  .register-btn {
+    height: 42px;
+  }
+
+  .register-footer {
+    margin-top: 12px;
+    padding-top: 10px;
+  }
+}
+
+@media (max-height: 720px) {
+  .register-card {
+    padding: 22px 28px;
+  }
+
+  .register-brand {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+  }
+
+  .register-brand-title {
+    font-size: 20px;
+  }
+
+  .register-welcome {
+    margin-bottom: 10px;
+  }
+
+  .register-heading {
+    font-size: 22px;
+  }
+
+  .register-subheading {
+    display: none;
+  }
+
+  .register-form {
+    gap: 8px;
+  }
+
+  .register-field input {
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .register-btn {
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .register-footer {
+    margin-top: 10px;
+    padding-top: 8px;
+    font-size: 12px;
   }
 }
