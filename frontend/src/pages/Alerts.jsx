@@ -80,6 +80,24 @@ export default function Alerts() {
     }
   }, [showToast]);
 
+  // Create incident directly from alert
+  const handleCreateIncident = useCallback(async (alert) => {
+    try {
+      setUpdatingId(alert._id);
+      const res = await api.post('/incidents', { alertId: alert._id });
+      if (res.data) {
+        showToast(`Incident ${res.data.incidentId || ''} created from this alert!`, 'success');
+        setAlerts((prev) =>
+          prev.map((a) => (a._id === alert._id ? { ...a, status: 'investigating' } : a))
+        );
+      }
+    } catch (err) {
+      showToast('Could not create incident: ' + (err.response?.data?.message || err.message), 'warning');
+    } finally {
+      setUpdatingId(null);
+    }
+  }, [showToast]);
+
   // Filter alerts by search, status, and severity
   const filteredAlerts = useMemo(() => {
     return alerts.filter((alert) => {
@@ -315,6 +333,23 @@ export default function Alerts() {
                             Mark Resolved
                           </button>
                         )}
+                        <button
+                          onClick={() => handleCreateIncident(alert)}
+                          disabled={updatingId === alert._id}
+                          title="Create an Incident from this alert"
+                          style={{
+                            background: '#0c3631',
+                            color: '#00d68f',
+                            border: '1px solid #144e47',
+                            borderRadius: '6px',
+                            padding: '4px 10px',
+                            cursor: 'pointer',
+                            fontSize: '11px',
+                            fontWeight: '700',
+                          }}
+                        >
+                          + Incident
+                        </button>
                         <button
                           onClick={() => handleDelete(alert._id)}
                           title="Delete alert"

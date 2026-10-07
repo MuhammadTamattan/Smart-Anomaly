@@ -90,8 +90,7 @@ export const analyzeLog = async (req, res, next) => {
 
     if (log.uploadedBy && log.uploadedBy.toString() !== req.user._id.toString()) {
       if (req.user?.role !== 'admin') {
-        log.uploadedBy = req.user._id;
-        await log.save();
+        return res.status(403).json({ message: 'Access denied' });
       }
     }
 

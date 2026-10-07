@@ -216,6 +216,14 @@ export default function Reports() {
           <p style={{ fontSize: '15px', color: '#0c3631', lineHeight: '1.5', margin: 0, fontWeight: '500' }}>
             {totalLogs} log files have been analyzed and {anomalyLogs} anomalies were detected.
           </p>
+          {data.summary?.incidents && (
+            <p style={{ fontSize: '13.5px', color: '#526b65', marginTop: '8px', lineHeight: '1.5' }}>
+              Tracked Security Incidents: <strong>{data.summary.incidents.total || 0}</strong> total (
+              <span style={{ color: '#dc2626', fontWeight: 600 }}> {data.summary.incidents.open || 0} Open</span>,{' '}
+              <span style={{ color: '#d97706', fontWeight: 600 }}>{data.summary.incidents.investigating || 0} Investigating</span>,{' '}
+              <span style={{ color: '#059669', fontWeight: 600 }}>{data.summary.incidents.resolved || 0} Resolved</span>).
+            </p>
+          )}
         </section>
 
         {/* RECENT ANALYSIS CONTAINER / TABLE */}

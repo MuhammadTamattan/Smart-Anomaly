@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import UserDashboard from './UserDashboard';
 import api from '../services/api';
 import './Dashboard.css';
 
@@ -156,7 +158,21 @@ function SvgLineChart({
  * Main Dashboard Component
  */
 export default function Dashboard() {
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  const [activeView, setActiveView] = useState(() => {
+    return user?.role === 'user' ? 'user' : 'admin';
+  });
+
+  // If role is regular user or activeView is user, display dedicated User Friendly Dashboard
+  if (user?.role === 'user' || activeView === 'user') {
+    return (
+      <UserDashboard
+        onSwitchToAdmin={user?.role === 'admin' ? () => setActiveView('admin') : null}
+      />
+    );
+  }
 
   const [stats, setStats] = useState(null);
   const [reportData, setReportData] = useState(null);
@@ -237,6 +253,17 @@ export default function Dashboard() {
           </div>
 
           <div className="green-dash-header-actions">
+            <button
+              type="button"
+              className="green-dash-btn-secondary"
+              onClick={() => setActiveView('user')}
+              title="Preview the simple User Friendly Dashboard"
+              style={{ background: '#e8f9f2', borderColor: '#00d68f', color: '#0c3631', fontWeight: '800' }}
+            >
+              <span>👤</span>
+              <span>User View</span>
+            </button>
+
             <button
               className="green-dash-btn-secondary"
               onClick={() => navigate('/log-upload')}

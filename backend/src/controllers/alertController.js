@@ -5,6 +5,7 @@ export const getAlerts = async (req, res, next) => {
     const filter = req.user?.role === 'admin' ? {} : { user: req.user._id };
     const alerts = await Alert.find(filter)
       .populate('sourceLog', 'originalName fileType')
+      .populate('user', 'name email role avatar')
       .sort({ detectedAt: -1 });
     res.json(alerts);
   } catch (error) {
@@ -16,7 +17,8 @@ export const getAlertById = async (req, res, next) => {
   try {
     const query = req.user?.role === 'admin' ? { _id: req.params.id } : { _id: req.params.id, user: req.user._id };
     const alert = await Alert.findOne(query)
-      .populate('sourceLog', 'originalName fileType fileSize status analysisResult');
+      .populate('sourceLog', 'originalName fileType fileSize status analysisResult')
+      .populate('user', 'name email role avatar');
 
     if (!alert) {
       return res.status(404).json({ message: 'Alert not found' });
@@ -54,7 +56,9 @@ export const createAlert = async (req, res, next) => {
       detectedAt: new Date(),
     });
 
-    const populated = await Alert.findById(alert._id).populate('sourceLog', 'originalName fileType');
+    const populated = await Alert.findById(alert._id)
+      .populate('sourceLog', 'originalName fileType')
+      .populate('user', 'name email role avatar');
     res.status(201).json(populated || alert);
   } catch (error) {
     next(error);

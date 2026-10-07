@@ -1,0 +1,545 @@
+/* ==========================================================================
+   SMART ANOMALY DETECTOR — FLOATING AI SECURITY ASSISTANT WIDGET
+   Fixed bottom-right circular button & compact overlay chat panel.
+   Theme: Deep Forest Green (#0c3631), Emerald Mint (#00d68f),
+   Canvas White (#ffffff), Slate Borders (#e2ece7)
+   ========================================================================== */
+
+.soc-float-widget-root {
+  position: relative;
+  z-index: 9999;
+}
+
+/* ==========================================================================
+   1. Floating Circular Trigger Button (Fixed Bottom-Right)
+   ========================================================================== */
+.soc-float-circle-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #0c3631;
+  border: 2px solid rgba(0, 214, 143, 0.5);
+  box-shadow: 0 8px 24px rgba(12, 54, 49, 0.35), 0 0 12px rgba(0, 214, 143, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  z-index: 9999;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s ease,
+              background-color 0.2s ease;
+}
+
+.soc-float-circle-btn:hover {
+  transform: scale(1.08);
+  background: #072521;
+  border-color: #00d68f;
+  box-shadow: 0 12px 28px rgba(12, 54, 49, 0.45), 0 0 16px rgba(0, 214, 143, 0.35);
+}
+
+.soc-float-circle-btn:active {
+  transform: scale(0.96);
+}
+
+.soc-float-circle-btn.active-open {
+  background: #134e47;
+  border-color: #00d68f;
+}
+
+.soc-float-btn-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.soc-float-btn-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #00d68f;
+  border: 2px solid #0c3631;
+  box-shadow: 0 0 6px #00d68f;
+}
+
+.soc-float-close-icon {
+  color: #00d68f;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   2. Compact Chat Panel Overlay (Directly Above Button)
+   ========================================================================== */
+.soc-float-panel {
+  position: fixed;
+  bottom: 92px;
+  right: 28px;
+  width: 410px;
+  max-width: calc(100vw - 36px);
+  height: 550px;
+  max-height: calc(100vh - 116px);
+  background: #ffffff;
+  border: 1px solid #dce8e3;
+  border-radius: 14px;
+  box-shadow: 0 18px 46px rgba(12, 54, 49, 0.2), 0 4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+  animation: socFloatPanelSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+@keyframes socFloatPanelSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+.soc-float-header {
+  background: #0c3631;
+  color: #ffffff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #144e47;
+}
+
+.soc-float-header-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.soc-float-header-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(0, 214, 143, 0.12);
+  border: 1px solid rgba(0, 214, 143, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.soc-float-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.soc-float-subtitle {
+  font-size: 11px;
+  color: #a7f3d0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1px;
+}
+
+.soc-float-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #00d68f;
+  box-shadow: 0 0 6px #00d68f;
+}
+
+.soc-float-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.soc-float-header-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2ece7;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 12px;
+}
+
+.soc-float-header-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.soc-float-header-btn.close-btn:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+/* ==========================================================================
+   Quick Prompts Bar
+   ========================================================================== */
+.soc-float-quick-bar {
+  background: #f7faf9;
+  border-bottom: 1px solid #e6f0ec;
+  padding: 8px 12px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+
+.soc-float-quick-chip {
+  background: #ffffff;
+  border: 1px solid #d8e5e0;
+  color: #0c3631;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.soc-float-quick-chip:hover:not(:disabled) {
+  background: #0c3631;
+  color: #ffffff;
+  border-color: #0c3631;
+}
+
+.soc-float-quick-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Error Alert
+   ========================================================================== */
+.soc-float-error-alert {
+  background: #fef2f2;
+  border-bottom: 1px solid #fee2e2;
+  color: #991b1b;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.soc-float-error-alert button {
+  background: none;
+  border: none;
+  color: #991b1b;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   Chat Body & Message Bubbles
+   ========================================================================== */
+.soc-float-messages-body {
+  flex: 1;
+  padding: 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #ffffff;
+}
+
+.soc-float-msg-row {
+  display: flex;
+  flex-direction: column;
+  max-width: 90%;
+}
+
+.soc-float-msg-row.user-side {
+  align-self: flex-end;
+}
+
+.soc-float-msg-row.ai-side {
+  align-self: flex-start;
+}
+
+.soc-float-bubble {
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.user-side .soc-float-bubble {
+  background: #0c3631;
+  color: #ffffff;
+  border-bottom-right-radius: 2px;
+}
+
+.ai-side .soc-float-bubble {
+  background: #f7faf9;
+  border: 1px solid #e4ede8;
+  color: #0f2420;
+  border-bottom-left-radius: 2px;
+}
+
+.error-side .soc-float-bubble {
+  background: #fff5f5;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.soc-float-bubble-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.user-side .soc-float-bubble-top {
+  border-bottom-color: rgba(255, 255, 255, 0.15);
+}
+
+.soc-float-sender-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0c3631;
+}
+
+.user-side .soc-float-sender-label {
+  color: #a7f3d0;
+}
+
+.soc-float-time {
+  font-size: 10px;
+  color: #79968f;
+}
+
+.user-side .soc-float-time {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.soc-float-copy-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #79968f;
+  cursor: pointer;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.soc-float-copy-btn:hover {
+  color: #0c3631;
+}
+
+.soc-float-bubble-text {
+  word-break: break-word;
+}
+
+/* Markdown in float panel */
+.soc-float-h4 {
+  margin: 6px 0 3px 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0c3631;
+}
+
+.soc-float-h5 {
+  margin: 6px 0 2px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #144e47;
+  text-transform: uppercase;
+}
+
+.soc-float-p {
+  margin: 3px 0;
+}
+
+.soc-float-spacer {
+  height: 4px;
+}
+
+.soc-float-bold {
+  font-weight: 700;
+  color: #072521;
+}
+
+.user-side .soc-float-bold {
+  color: #ffffff;
+}
+
+.soc-float-code {
+  background: #eef5f2;
+  color: #0c3631;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 11.5px;
+}
+
+.user-side .soc-float-code {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.soc-float-bullet-row {
+  display: flex;
+  gap: 5px;
+  margin: 2px 0;
+}
+
+.soc-float-bullet-dot {
+  color: #059669;
+  font-weight: bold;
+}
+
+.soc-float-bullet-content {
+  flex: 1;
+}
+
+/* Loading Dots */
+.loading-bubble {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.soc-float-loading-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.soc-float-loading-dots .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #059669;
+  animation: socFloatBlink 1.4s infinite both;
+}
+
+.soc-float-loading-dots .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.soc-float-loading-dots .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes socFloatBlink {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1.2); opacity: 1; }
+}
+
+.soc-float-loading-text {
+  font-size: 11.5px;
+  color: #45625b;
+}
+
+/* ==========================================================================
+   Input / Footer Area
+   ========================================================================== */
+.soc-float-footer {
+  border-top: 1px solid #e4ede8;
+  padding: 8px 10px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.soc-float-input {
+  flex: 1;
+  border: 1px solid #d8e5e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  outline: none;
+  font-family: inherit;
+  color: #0c3631;
+  background: #f8faf9;
+  transition: border-color 0.15s ease;
+}
+
+.soc-float-input:focus {
+  border-color: #0c3631;
+  background: #ffffff;
+}
+
+.soc-float-send-btn {
+  background: #0c3631;
+  color: #00d68f;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.soc-float-send-btn:hover:not(:disabled) {
+  background: #072521;
+}
+
+.soc-float-send-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.soc-float-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(0, 214, 143, 0.3);
+  border-top-color: #00d68f;
+  border-radius: 50%;
+  animation: socFloatSpin 0.8s linear infinite;
+}
+
+@keyframes socFloatSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 480px) {
+  .soc-float-panel {
+    right: 12px;
+    bottom: 84px;
+    width: calc(100vw - 24px);
+    height: 480px;
+  }
+  .soc-float-circle-btn {
+    right: 16px;
+    bottom: 16px;
+    width: 50px;
+    height: 50px;
+  }
+}

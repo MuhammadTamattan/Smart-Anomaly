@@ -103,16 +103,11 @@ export const validateAndResolveUrl = async (rawUrl) => {
     return { parsedUrl, resolvedIp: hostname, hostname };
   }
 
-  // Resolve DNS to verify all destination IPs
-  let resolvedAddresses = [];
-  try {
-    resolvedAddresses = await dns.promises.lookup(hostname, { all: true });
-  } catch {
-    throw new Error('Unable to reach this website (DNS lookup failed).');
-  }
+  // Resilient DNS resolution to verify all destination IPs
+  const resolvedAddresses = await resolveHostnameResiliently(hostname);
 
   if (!resolvedAddresses || resolvedAddresses.length === 0) {
-    throw new Error('Unable to resolve website domain address.');
+    throw new Error(`Unable to resolve domain "${hostname}". Please check that the URL exists.`);
   }
 
   // Check every resolved IP address against SSRF filter
@@ -130,17 +125,81 @@ export const validateAndResolveUrl = async (rawUrl) => {
 };
 
 /**
+ * Multi-tier resilient DNS resolver with system, resolve4, and public recursive fallback.
+ */
+export const resolveHostnameResiliently = async (hostname) => {
+  // Strategy 1: System getaddrinfo lookup
+  try {
+    const addresses = await dns.promises.lookup(hostname, { all: true, verbatim: true });
+    if (addresses && addresses.length > 0) {
+      return addresses;
+    }
+  } catch {
+    // System lookup failed, proceed to next strategies
+  }
+
+  // Strategy 2: System DNS resolve4
+  try {
+    const v4 = await dns.promises.resolve4(hostname);
+    if (v4 && v4.length > 0) {
+      return v4.map((ip) => ({ address: ip, family: 4 }));
+    }
+  } catch {
+    // Proceed to public resolvers
+  }
+
+  // Strategy 3: Resilient public resolvers (Google, Cloudflare, Quad9)
+  try {
+    const resolver = new dns.promises.Resolver();
+    resolver.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4', '1.0.0.1', '9.9.9.9']);
+    const v4 = await resolver.resolve4(hostname);
+    if (v4 && v4.length > 0) {
+      return v4.map((ip) => ({ address: ip, family: 4 }));
+    }
+  } catch {
+    // Try IPv6
+  }
+
+  // Strategy 4: Resilient public resolver IPv6
+  try {
+    const resolver = new dns.promises.Resolver();
+    resolver.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4', '1.0.0.1']);
+    const v6 = await resolver.resolve6(hostname);
+    if (v6 && v6.length > 0) {
+      return v6.map((ip) => ({ address: ip, family: 6 }));
+    }
+  } catch {
+    // Try short delay retry
+  }
+
+  // Strategy 5: Short delay retry
+  await new Promise((r) => setTimeout(r, 400));
+  try {
+    const resolver = new dns.promises.Resolver();
+    resolver.setServers(['1.1.1.1', '8.8.8.8']);
+    const v4 = await resolver.resolve4(hostname);
+    if (v4 && v4.length > 0) {
+      return v4.map((ip) => ({ address: ip, family: 4 }));
+    }
+  } catch {
+    // Fail
+  }
+
+  throw new Error(`Unable to reach this website (DNS lookup failed for "${hostname}").`);
+};
+
+/**
  * Safely inspects SSL/TLS certificate of an HTTPS host without crashing on untrusted certs.
  */
-export const checkTlsCertificate = (hostname) => {
+export const checkTlsCertificate = (hostname, ipOverride = null) => {
   return new Promise((resolve) => {
     try {
       const socket = tls.connect(
         {
-          host: hostname,
+          host: ipOverride || hostname,
           port: 443,
           servername: hostname,
-          timeout: 5000,
+          timeout: 7000,
           rejectUnauthorized: false,
         },
         () => {
@@ -259,7 +318,7 @@ export const scanWebsiteUrl = async (inputUrl) => {
   };
 
   if (isHttps) {
-    sslDetails = await checkTlsCertificate(hostname);
+    sslDetails = await checkTlsCertificate(hostname, resolvedIp);
   }
 
   // 3. Perform Defensive HTTP Request with Redirect Tracking
@@ -275,14 +334,15 @@ export const scanWebsiteUrl = async (inputUrl) => {
 
   while (redirectCount <= MAX_REDIRECTS) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort(), 9000);
 
     try {
       const res = await fetch(currentUrl, {
         method: 'GET',
         headers: {
-          'User-Agent': 'SmartAnomaly-SecurityScanner/1.0 (Defensive Security Audit)',
-          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 (SmartAnomaly-Scanner/1.0)',
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
         },
         redirect: 'manual',
         signal: controller.signal,

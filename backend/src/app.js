@@ -9,6 +9,8 @@ import analysisRoutes from './routes/analysisRoutes.js';
 import alertRoutes from './routes/alertRoutes.js';
 import reportsRoutes from './routes/reportsRoutes.js';
 import websiteScannerRoutes from './routes/websiteScannerRoutes.js';
+import aiAssistantRoutes from './routes/aiAssistantRoutes.js';
+import incidentRoutes from './routes/incidentRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
@@ -27,6 +29,8 @@ app.use('/api/logs', analysisRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/website-scanner', websiteScannerRoutes);
+app.use('/api/ai-assistant', aiAssistantRoutes);
+app.use('/api/incidents', incidentRoutes);
 app.get('/api', (req, res) => res.json({ message: 'API is running' }));
 
 app.use(errorHandler);

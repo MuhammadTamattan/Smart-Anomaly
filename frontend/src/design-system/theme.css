@@ -1,0 +1,671 @@
+/* ==========================================================================
+   SMART ANOMALY DETECTOR — GLOBAL THEME ENGINE (DARK & LIGHT)
+   Supports dynamic, instant theme switching across the entire application:
+   - Sidebar
+   - Dashboard
+   - Cards & Stat Boxes
+   - Tables & Rows
+   - Charts & Visualizations
+   - Forms, Inputs & Textareas
+   - Alerts & Badges
+   - ML Analysis
+   - Log Upload
+   - Website Scanner
+   - Incident Management
+   - Reports
+   - Settings Hub
+   - Floating AI Security Assistant
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. GLOBAL TOKENS & CSS VARIABLES BY THEME
+   -------------------------------------------------------------------------- */
+
+/* DARK MODE (Default SOC Cyber Command Theme) */
+:root,
+html[data-theme="dark"] {
+  --theme-mode: dark;
+  --theme-canvas: #071a17;
+  --theme-card: #0e2b25;
+  --theme-card-hover: #123730;
+  --theme-card-subtle: #0a231e;
+  --theme-border: #183e36;
+  --theme-border-strong: #23564c;
+  --theme-text-main: #f1f5f9;
+  --theme-text-sub: #94a3b8;
+  --theme-text-muted: #64748b;
+  --theme-input-bg: #09211c;
+  --theme-input-border: #1b473d;
+  --theme-input-focus: #00d68f;
+
+  /* Dashboard Variables Override */
+  --gd-canvas-bg: #071a17;
+  --gd-card-bg: #0e2b25;
+  --gd-text-main: #f1f5f9;
+  --gd-text-sub: #94a3b8;
+  --gd-text-muted: #64748b;
+  --gd-border: #183e36;
+  --gd-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+
+  /* ML Analysis Variables Override */
+  --ml-canvas: #071a17;
+  --ml-card-bg: #0e2b25;
+  --ml-text-main: #f1f5f9;
+  --ml-text-sub: #94a3b8;
+  --ml-text-muted: #64748b;
+  --ml-border: #183e36;
+
+  /* Alerts Variables Override */
+  --alt-canvas: #071a17;
+  --alt-card-bg: #0e2b25;
+  --alt-text-main: #f1f5f9;
+  --alt-text-sub: #94a3b8;
+  --alt-text-muted: #64748b;
+  --alt-border: #183e36;
+
+  /* Reports Variables Override */
+  --rpt-canvas: #071a17;
+  --rpt-card-bg: #0e2b25;
+  --rpt-text-main: #f1f5f9;
+  --rpt-text-sub: #94a3b8;
+  --rpt-text-muted: #64748b;
+  --rpt-border: #183e36;
+
+  /* Website Scanner Variables Override */
+  --web-canvas: #071a17;
+  --web-card-bg: #0e2b25;
+  --web-text-main: #f1f5f9;
+  --web-text-sub: #94a3b8;
+  --web-text-muted: #64748b;
+  --web-border: #183e36;
+
+  /* Log Upload Variables Override */
+  --lu-canvas: #071a17;
+  --lu-card-bg: #0e2b25;
+  --lu-text-main: #f1f5f9;
+  --lu-text-sub: #94a3b8;
+  --lu-text-muted: #64748b;
+  --lu-border: #183e36;
+
+  /* Global Design System Tokens */
+  --ds-bg-primary: #071a17;
+  --ds-bg-secondary: #0c2621;
+  --ds-bg-surface: #0e2b25;
+  --ds-bg-surface-hover: #133a32;
+  --ds-card-bg-white: #0e2b25;
+  --ds-canvas-bg: #071a17;
+  --ds-text-primary: #f1f5f9;
+  --ds-text-secondary: #cbd5e1;
+  --ds-text-muted: #839b95;
+  --ds-border: #183e36;
+}
+
+/* LIGHT MODE (Clean, Professional High-Contrast Theme) */
+html[data-theme="light"] {
+  --theme-mode: light;
+  --theme-canvas: #f4f8f6;
+  --theme-card: #ffffff;
+  --theme-card-hover: #fcfdfd;
+  --theme-card-subtle: #f8faf9;
+  --theme-border: #e2ece7;
+  --theme-border-strong: #c8ded5;
+  --theme-text-main: #0c2621;
+  --theme-text-sub: #526b65;
+  --theme-text-muted: #839b95;
+  --theme-input-bg: #ffffff;
+  --theme-input-border: #dce8e3;
+  --theme-input-focus: #0c3631;
+
+  /* Dashboard Variables Override */
+  --gd-canvas-bg: #f4f8f6;
+  --gd-card-bg: #ffffff;
+  --gd-text-main: #0c2621;
+  --gd-text-sub: #526b65;
+  --gd-text-muted: #839b95;
+  --gd-border: #e2ece7;
+  --gd-shadow-card: 0 4px 18px rgba(12, 54, 49, 0.05);
+
+  /* ML Analysis Variables Override */
+  --ml-canvas: #f4f8f6;
+  --ml-card-bg: #ffffff;
+  --ml-text-main: #0c2621;
+  --ml-text-sub: #526b65;
+  --ml-text-muted: #839b95;
+  --ml-border: #e2ece7;
+
+  /* Alerts Variables Override */
+  --alt-canvas: #f4f8f6;
+  --alt-card-bg: #ffffff;
+  --alt-text-main: #0c2621;
+  --alt-text-sub: #526b65;
+  --alt-text-muted: #839b95;
+  --alt-border: #e2ece7;
+
+  /* Reports Variables Override */
+  --rpt-canvas: #f4f8f6;
+  --rpt-card-bg: #ffffff;
+  --rpt-text-main: #0c2621;
+  --rpt-text-sub: #526b65;
+  --rpt-text-muted: #839b95;
+  --rpt-border: #e2ece7;
+
+  /* Website Scanner Variables Override */
+  --web-canvas: #f4f8f6;
+  --web-card-bg: #ffffff;
+  --web-text-main: #0c2621;
+  --web-text-sub: #526b65;
+  --web-text-muted: #839b95;
+  --web-border: #e2ece7;
+
+  /* Log Upload Variables Override */
+  --lu-canvas: #f4f8f6;
+  --lu-card-bg: #ffffff;
+  --lu-text-main: #0c2621;
+  --lu-text-sub: #526b65;
+  --lu-text-muted: #839b95;
+  --lu-border: #e2ece7;
+
+  /* Global Design System Tokens */
+  --ds-bg-primary: #f4f8f6;
+  --ds-bg-secondary: #ffffff;
+  --ds-bg-surface: #ffffff;
+  --ds-bg-surface-hover: #f1f5f3;
+  --ds-card-bg-white: #ffffff;
+  --ds-canvas-bg: #f4f8f6;
+  --ds-text-primary: #0c2621;
+  --ds-text-secondary: #2d4a43;
+  --ds-text-muted: #637d76;
+  --ds-border: #e2ece7;
+}
+
+/* --------------------------------------------------------------------------
+   2. APP SHELL & MAIN CANVASES
+   -------------------------------------------------------------------------- */
+html[data-theme="dark"] .aeux-desktop-frame,
+html[data-theme="dark"] .aeux-dashboard-shell,
+html[data-theme="dark"] .aeux-main-content {
+  background-color: var(--theme-canvas) !important;
+  color: var(--theme-text-main);
+}
+
+html[data-theme="light"] .aeux-desktop-frame,
+html[data-theme="light"] .aeux-dashboard-shell,
+html[data-theme="light"] .aeux-main-content {
+  background-color: var(--theme-canvas) !important;
+  color: var(--theme-text-main);
+}
+
+/* --------------------------------------------------------------------------
+   3. SIDEBAR THEME STYLES
+   -------------------------------------------------------------------------- */
+/* Dark Mode Sidebar (Deep Forest Green Gradient) */
+html[data-theme="dark"] .aeux-sidebar {
+  background: #061916;
+  background-image: linear-gradient(180deg, #07221d 0%, #041411 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .aeux-brand-name {
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .aeux-brand-sub {
+  color: #679289;
+}
+
+html[data-theme="dark"] .aeux-nav-section-title {
+  color: #679289;
+}
+
+html[data-theme="dark"] .aeux-nav-item {
+  color: #8dafa8;
+}
+
+html[data-theme="dark"] .aeux-nav-item:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .aeux-nav-item.active {
+  background: rgba(0, 214, 143, 0.15);
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(0, 214, 143, 0.35);
+}
+
+html[data-theme="dark"] .aeux-user-card {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .aeux-user-name {
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .aeux-user-tag {
+  color: #799f97;
+}
+
+/* Light Mode Sidebar (Clean Professional Light Slate/White) */
+html[data-theme="light"] .aeux-sidebar {
+  background: #ffffff;
+  background-image: linear-gradient(180deg, #ffffff 0%, #f6faf8 100%);
+  border-right: 1px solid #e2ece7;
+  color: #0c2621;
+}
+
+html[data-theme="light"] .aeux-mobile-bar {
+  background: #ffffff;
+  color: #0c2621;
+  border-bottom: 1px solid #e2ece7;
+}
+
+html[data-theme="light"] .aeux-mobile-bar .aeux-hamburger {
+  color: #0c2621;
+}
+
+html[data-theme="light"] .aeux-brand-name {
+  color: #0c3631;
+}
+
+html[data-theme="light"] .aeux-brand-sub {
+  color: #437166;
+}
+
+html[data-theme="light"] .aeux-nav-section-title {
+  color: #526b65;
+}
+
+html[data-theme="light"] .aeux-nav-item {
+  color: #4a665f;
+}
+
+html[data-theme="light"] .aeux-nav-item:hover {
+  color: #0c3631;
+  background: rgba(12, 54, 49, 0.06);
+}
+
+html[data-theme="light"] .aeux-nav-item.active {
+  background: #e6f7f2;
+  color: #0c3631;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1.5px #00d68f;
+}
+
+html[data-theme="light"] .aeux-nav-item.active .aeux-nav-icon {
+  color: #00875a;
+}
+
+html[data-theme="light"] .aeux-user-section {
+  border-top-color: #e2ece7;
+}
+
+html[data-theme="light"] .aeux-user-section-title {
+  color: #526b65;
+}
+
+html[data-theme="light"] .aeux-user-card {
+  background: #f4f8f6;
+  border: 1px solid #dce8e3;
+  box-shadow: 0 2px 6px rgba(12, 54, 49, 0.04);
+}
+
+html[data-theme="light"] .aeux-user-name {
+  color: #0c3631;
+}
+
+html[data-theme="light"] .aeux-user-tag {
+  color: #526b65;
+}
+
+html[data-theme="light"] .aeux-logout-btn {
+  color: #526b65;
+}
+
+html[data-theme="light"] .aeux-logout-btn:hover {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   4. DASHBOARD THEME OVERRIDES (DARK MODE)
+   -------------------------------------------------------------------------- */
+html[data-theme="dark"] .green-dash-wrapper {
+  background-color: var(--theme-canvas);
+  color: var(--theme-text-main);
+}
+
+html[data-theme="dark"] .green-dash-title {
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .green-dash-subtitle {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .green-stat-card {
+  background: var(--theme-card);
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme="dark"] .green-stat-value {
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .green-stat-label {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .green-card {
+  background: var(--theme-card);
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme="dark"] .green-card-title {
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .green-card-subtitle {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .green-table {
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .green-table th {
+  background: var(--theme-input-bg);
+  color: #94a3b8;
+  border-bottom: 1px solid var(--theme-border);
+}
+
+html[data-theme="dark"] .green-table td {
+  border-bottom: 1px solid var(--theme-border);
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .green-table tr:hover td {
+  background: #11332c;
+}
+
+html[data-theme="dark"] .green-dash-btn-secondary {
+  background: var(--theme-input-bg);
+  border: 1px solid var(--theme-border);
+  color: #f1f5f9;
+}
+
+html[data-theme="dark"] .green-dash-btn-secondary:hover {
+  background: #123730;
+  border-color: #00d68f;
+}
+
+html[data-theme="dark"] .chart-grid-line {
+  stroke: rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] .chart-axis-label {
+  fill: #94a3b8 !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. INCIDENT MANAGEMENT THEME OVERRIDES (DARK MODE)
+   -------------------------------------------------------------------------- */
+html[data-theme="dark"] .inc-page-root {
+  background-color: var(--theme-canvas) !important;
+  color: var(--theme-text-main) !important;
+}
+
+html[data-theme="dark"] .inc-header-title {
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .inc-header-desc {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .inc-header-tag {
+  color: #00d68f !important;
+}
+
+html[data-theme="dark"] .inc-stat-card {
+  background: var(--theme-card) !important;
+  border-color: var(--theme-border) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25) !important;
+}
+
+html[data-theme="dark"] .inc-stat-value {
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .inc-stat-label {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .inc-chip-btn {
+  background: var(--theme-card) !important;
+  border-color: var(--theme-border) !important;
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .inc-chip-btn:hover {
+  border-color: #00d68f !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .inc-chip-btn.active {
+  background: #144e47 !important;
+  border-color: #00d68f !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .inc-search-input,
+html[data-theme="dark"] .inc-select-filter {
+  background: var(--theme-input-bg) !important;
+  border-color: var(--theme-input-border) !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .inc-table-container {
+  background: var(--theme-card) !important;
+  border-color: var(--theme-border) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25) !important;
+}
+
+html[data-theme="dark"] .inc-table th {
+  background: var(--theme-input-bg) !important;
+  color: #94a3b8 !important;
+  border-bottom-color: var(--theme-border) !important;
+}
+
+html[data-theme="dark"] .inc-table td {
+  border-bottom-color: var(--theme-border) !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .inc-table tr:hover td {
+  background: #123730 !important;
+}
+
+html[data-theme="dark"] .inc-id-tag {
+  background: var(--theme-input-bg) !important;
+  border-color: var(--theme-border) !important;
+  color: #00d68f !important;
+}
+
+html[data-theme="dark"] .inc-action-btn {
+  background: var(--theme-input-bg) !important;
+  border-color: var(--theme-border) !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .inc-action-btn:hover {
+  background: #144e47 !important;
+  border-color: #00d68f !important;
+}
+
+html[data-theme="dark"] .inc-modal-card {
+  background: var(--theme-card) !important;
+  border: 1px solid var(--theme-border) !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .inc-modal-header {
+  border-bottom-color: var(--theme-border) !important;
+}
+
+html[data-theme="dark"] .inc-modal-title {
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .inc-modal-footer {
+  border-top-color: var(--theme-border) !important;
+  background: var(--theme-input-bg) !important;
+}
+
+html[data-theme="dark"] .inc-notes-input {
+  background: var(--theme-input-bg) !important;
+  border-color: var(--theme-input-border) !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .inc-meta-item {
+  background: var(--theme-input-bg) !important;
+  border-color: var(--theme-border) !important;
+}
+
+html[data-theme="dark"] .inc-meta-label {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .inc-meta-value {
+  color: #f1f5f9 !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. FLOATING AI SECURITY ASSISTANT THEME OVERRIDES (DARK MODE)
+   -------------------------------------------------------------------------- */
+html[data-theme="dark"] .soc-float-panel {
+  background: #0e2b25 !important;
+  border: 1px solid #183e36 !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55), 0 0 20px rgba(0, 214, 143, 0.12) !important;
+}
+
+html[data-theme="dark"] .soc-float-header {
+  background: #08221c !important;
+  border-bottom: 1px solid #183e36 !important;
+}
+
+html[data-theme="dark"] .soc-float-header-title {
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .soc-float-header-sub {
+  color: #00d68f !important;
+}
+
+html[data-theme="dark"] .soc-float-messages {
+  background: #071a17 !important;
+}
+
+html[data-theme="dark"] .soc-chat-msg.assistant .soc-chat-bubble {
+  background: #0e2b25 !important;
+  border: 1px solid #183e36 !important;
+  color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"] .soc-chat-msg.assistant .soc-chat-bubble p,
+html[data-theme="dark"] .soc-chat-msg.assistant .soc-chat-bubble li {
+  color: #e2ece7 !important;
+}
+
+html[data-theme="dark"] .soc-chat-msg.assistant .soc-chat-bubble strong {
+  color: #00d68f !important;
+}
+
+html[data-theme="dark"] .soc-chat-msg.user .soc-chat-bubble {
+  background: #00d68f !important;
+  color: #041e17 !important;
+  font-weight: 600;
+}
+
+html[data-theme="dark"] .soc-chat-time {
+  color: #64748b !important;
+}
+
+html[data-theme="dark"] .soc-float-input-bar {
+  background: #08221c !important;
+  border-top: 1px solid #183e36 !important;
+}
+
+html[data-theme="dark"] .soc-float-input {
+  background: #071a17 !important;
+  border: 1px solid #1b453c !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .soc-float-input::placeholder {
+  color: #64748b !important;
+}
+
+html[data-theme="dark"] .soc-quick-chips-wrapper {
+  background: #08221c !important;
+  border-top-color: #183e36 !important;
+}
+
+html[data-theme="dark"] .soc-quick-chip {
+  background: #0e2b25 !important;
+  border: 1px solid #183e36 !important;
+  color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .soc-quick-chip:hover {
+  background: #144e47 !important;
+  color: #00d68f !important;
+  border-color: #00d68f !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. INPUTS, BUTTONS, BADGES ACROSS OTHER PAGES (ML, ALERTS, SCANNER, LOGS)
+   -------------------------------------------------------------------------- */
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background-color: var(--theme-input-bg);
+  border-color: var(--theme-input-border);
+  color: var(--theme-text-main);
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: var(--theme-text-muted);
+}
+
+html[data-theme="dark"] .ml-card,
+html[data-theme="dark"] .alt-card,
+html[data-theme="dark"] .rpt-card,
+html[data-theme="dark"] .web-card,
+html[data-theme="dark"] .lu-card {
+  background: var(--theme-card);
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme="dark"] .lu-dropzone {
+  background: var(--theme-input-bg);
+  border-color: var(--theme-border);
+}
+
+html[data-theme="dark"] .lu-dropzone:hover {
+  border-color: #00d68f;
+  background: #0d2822;
+}
+
+/* Smooth Transitions for seamless theme toggle without page reload */
+*,
+*::before,
+*::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
+}

@@ -1,5 +1,6 @@
 import Log from '../models/Log.js';
 import Alert from '../models/Alert.js';
+import Incident from '../models/Incident.js';
 
 export const getReportsSummary = async (req, res, next) => {
   try {
@@ -140,6 +141,12 @@ export const getReportsSummary = async (req, res, next) => {
         resolvedAlerts: alertStatusMap.resolved || 0,
         investigatingAlerts: alertStatusMap.investigating || 0,
         newAlerts: alertStatusMap.new || 0,
+        incidents: {
+          total: await Incident.countDocuments().catch(() => 0),
+          open: await Incident.countDocuments({ status: 'open' }).catch(() => 0),
+          investigating: await Incident.countDocuments({ status: 'investigating' }).catch(() => 0),
+          resolved: await Incident.countDocuments({ status: 'resolved' }).catch(() => 0),
+        },
       },
       logSeverity: {
         critical: severityMap.critical || 0,
