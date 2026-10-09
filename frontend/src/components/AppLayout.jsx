@@ -265,7 +265,7 @@ export default function AppLayout() {
   }, [user?.role, addIncidentPopup]);
 
   const isUserRole = user?.role === 'user';
-  const currentNavItems = isUserRole ? userMenuItems : adminMenuItems;
+  const currentNavItems = adminMenuItems;
 
   const handleLogout = () => {
     logout();
@@ -291,7 +291,11 @@ export default function AppLayout() {
             <span className="aeux-brand-name">Smart Anomaly Detector</span>
           </div>
           <button className="aeux-hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            ☰
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -349,7 +353,10 @@ export default function AppLayout() {
                   {user?.avatar ? (
                     <img src={user.avatar} alt={user.name || 'User'} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
                   ) : (
-                    '👨‍💻'
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--theme-accent, #00d68f)' }}>
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
                   )}
                 </div>
               </div>

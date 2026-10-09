@@ -399,15 +399,24 @@ html[data-theme="light"] .soc-settings-icon-bubble {
 
 .soc-input-icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   color: var(--theme-text-sub, #94a3b8);
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
+  z-index: 2;
+}
+
+.soc-input-icon svg {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
 .soc-settings-input {
   width: 100%;
-  padding: 10px 14px 10px 38px;
+  padding: 10px 14px 10px 42px !important;
   background: var(--theme-input-bg, #09211c);
   border: 1px solid var(--theme-input-border, #1b473d);
   border-radius: 10px;

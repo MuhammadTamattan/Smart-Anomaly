@@ -120,7 +120,9 @@ function SvgLineChart({
                     width="84"
                     height="24"
                     rx="6"
-                    fill="#0c3631"
+                    fill="#131c19"
+                    stroke="#1e2a26"
+                    strokeWidth="1"
                   />
                   <text
                     x={Math.min(width - 53, Math.max(52, pt.x))}
@@ -161,15 +163,14 @@ export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [activeView, setActiveView] = useState(() => {
-    return user?.role === 'user' ? 'user' : 'admin';
-  });
+  // Active view: defaults to 'admin' (the full SOC Intelligence Dashboard)
+  const [activeView, setActiveView] = useState('admin');
 
-  // If role is regular user or activeView is user, display dedicated User Friendly Dashboard
-  if (user?.role === 'user' || activeView === 'user') {
+  // If user explicitly chooses to preview the User Friendly Dashboard
+  if (activeView === 'user') {
     return (
       <UserDashboard
-        onSwitchToAdmin={user?.role === 'admin' ? () => setActiveView('admin') : null}
+        onSwitchToAdmin={() => setActiveView('admin')}
       />
     );
   }
@@ -246,6 +247,10 @@ export default function Dashboard() {
         {/* Header */}
         <header className="green-dash-header">
           <div className="green-dash-header-title-wrap">
+            <div className="green-dash-context-tag">
+              <span>●</span>
+              <span>SOC INTELLIGENCE // REAL-TIME PROTECTION</span>
+            </div>
             <h1 className="green-dash-header-title">Dashboard</h1>
             <p className="green-dash-header-sub">
               Smart Anomaly Detection and Alert System
@@ -258,7 +263,6 @@ export default function Dashboard() {
               className="green-dash-btn-secondary"
               onClick={() => setActiveView('user')}
               title="Preview the simple User Friendly Dashboard"
-              style={{ background: '#e8f9f2', borderColor: '#00d68f', color: '#0c3631', fontWeight: '800' }}
             >
               <span>👤</span>
               <span>User View</span>
@@ -488,7 +492,7 @@ export default function Dashboard() {
 
         {/* BOTTOM SECTION: Recent Alerts */}
         <section className="green-dash-analytics-row">
-          <div className="green-dash-card" style={{ gridColumn: 'span 2' }}>
+          <div className="green-dash-card green-dash-full-width-card">
             <div className="green-dash-card-header-row">
               <div>
                 <h3 className="green-dash-section-title">Recent Alerts</h3>

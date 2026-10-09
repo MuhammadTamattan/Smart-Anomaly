@@ -1,8 +1,6 @@
 /* ==========================================================================
    SMART ANOMALY DETECTOR — APPLAYOUT STYLES
-   Sidebar: Deep Forest Green (#0c3631)
-   Main: Off-white canvas (#f4f8f6)
-   Layout: TRUE FULL SCREEN (Edge-to-edge 100vw, 100vh)
+   Visual Language: Modern Cybersecurity SaaS / SOC Navigation
    ========================================================================== */
 
 /* Full Screen Viewport Wrapper */
@@ -10,7 +8,8 @@
   width: 100vw;
   height: 100vh;
   min-height: 100vh;
-  background-color: #f4f8f6;
+  background-color: var(--theme-canvas);
+  color: var(--theme-text-main);
   padding: 0;
   margin: 0;
   display: flex;
@@ -18,14 +17,14 @@
   box-sizing: border-box;
 }
 
-/* Master Unified Dashboard Shell (Edge-to-Edge) */
+/* Master Unified Dashboard Shell */
 .aeux-dashboard-shell {
   width: 100%;
   height: 100%;
   display: flex;
   overflow: hidden;
   position: relative;
-  background: #f4f8f6;
+  background-color: var(--theme-canvas);
   border-radius: 0;
   box-shadow: none;
 }
@@ -40,11 +39,12 @@
 /* Mobile Bar */
 .aeux-mobile-bar {
   display: none;
-  background: #0c3631;
-  padding: 14px 20px;
+  background: var(--theme-sidebar);
+  border-bottom: 1px solid var(--theme-border);
+  padding: 12px 18px;
   justify-content: space-between;
   align-items: center;
-  color: #ffffff;
+  color: var(--theme-text-main);
   flex-shrink: 0;
   z-index: 100;
 }
@@ -52,8 +52,8 @@
 .aeux-hamburger {
   background: transparent;
   border: none;
-  color: #fff;
-  font-size: 22px;
+  color: var(--theme-text-main);
+  font-size: 20px;
   cursor: pointer;
 }
 
@@ -63,21 +63,21 @@
   }
 }
 
-/* LEFT SIDEBAR (Dark Forest Green Full Height) */
+/* LEFT SIDEBAR */
 .aeux-sidebar {
-  width: 250px;
+  width: 255px;
   height: 100vh;
-  background: #0c3631;
-  background-image: linear-gradient(180deg, #0c3631 0%, #07231f 100%);
+  background: var(--theme-sidebar);
+  border-right: 1px solid var(--theme-border);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 28px 20px;
-  color: #ffffff;
+  padding: 22px 16px;
+  color: var(--theme-text-main);
   flex-shrink: 0;
   box-sizing: border-box;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
   z-index: 50;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 @media (max-width: 900px) {
@@ -86,10 +86,11 @@
     height: auto;
     display: none;
     position: absolute;
-    top: 54px;
+    top: 52px;
     left: 0;
     right: 0;
     bottom: 0;
+    background: var(--theme-sidebar);
   }
   .aeux-sidebar.open {
     display: flex;
@@ -101,17 +102,19 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 2px 4px;
 }
 
 .aeux-logo-leaf {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
-  background: rgba(0, 214, 143, 0.12);
-  border: 1px solid rgba(0, 214, 143, 0.3);
+  background: var(--theme-accent-subtle);
+  border: 1px solid var(--theme-accent-border);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--theme-accent);
   flex-shrink: 0;
 }
 
@@ -121,41 +124,42 @@
 }
 
 .aeux-brand-name {
-  font-size: 15px;
-  font-weight: 800;
-  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--theme-text-main);
   letter-spacing: -0.2px;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .aeux-brand-sub {
   font-size: 10px;
-  color: #679289;
+  color: var(--theme-text-muted);
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
 }
 
 /* Navigation Section */
 .aeux-nav-section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin: 32px 0 auto 0;
+  gap: 8px;
+  margin: 24px 0 auto 0;
 }
 
 .aeux-nav-section-title {
   font-size: 10px;
   font-weight: 700;
-  color: #679289;
-  letter-spacing: 1.2px;
+  color: var(--theme-text-muted);
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  padding-left: 6px;
+  padding-left: 10px;
 }
 
 .aeux-nav-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 3px;
 }
 
 .aeux-nav-item {
@@ -163,28 +167,30 @@
   align-items: center;
   gap: 12px;
   background: transparent;
-  border: none;
-  border-radius: 12px;
-  padding: 11px 14px;
-  color: #8dafa8;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 9.5px 12px;
+  color: var(--theme-text-sub);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   text-align: left;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
   width: 100%;
 }
 
 .aeux-nav-item:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--theme-text-main);
+  background: var(--theme-card-hover);
 }
 
 /* Active Nav Item */
 .aeux-nav-item.active {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  background: var(--theme-card);
+  color: var(--theme-text-main);
+  border: 1px solid var(--theme-accent-border);
+  font-weight: 600;
+  box-shadow: var(--theme-shadow-sm);
 }
 
 .aeux-nav-icon {
@@ -192,10 +198,13 @@
   align-items: center;
   justify-content: center;
   opacity: 0.9;
+  color: var(--theme-text-sub);
+  transition: color 0.15s ease;
 }
 
-.aeux-nav-item.active .aeux-nav-icon {
-  color: #00d68f;
+.aeux-nav-item.active .aeux-nav-icon,
+.aeux-nav-item:hover .aeux-nav-icon {
+  color: var(--theme-accent);
 }
 
 /* User Account Section at Bottom */
@@ -203,35 +212,41 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 16px;
+  border-top: 1px solid var(--theme-border);
 }
 
 .aeux-user-section-title {
   font-size: 10px;
   font-weight: 700;
-  color: #679289;
-  letter-spacing: 1px;
+  color: var(--theme-text-muted);
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  padding-left: 6px;
+  padding-left: 8px;
 }
 
 .aeux-user-card {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 8px 12px;
-  border-radius: 14px;
+  background: var(--theme-card);
+  border: 1px solid var(--theme-border);
+  padding: 8px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.aeux-user-card:hover {
+  border-color: var(--theme-accent-border);
 }
 
 .aeux-avatar-wrap {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 2px solid #00d68f;
-  padding: 2px;
+  border: 1.5px solid var(--theme-accent);
+  padding: 1.5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -242,11 +257,11 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: #15453f;
+  background: var(--theme-card-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .aeux-user-info {
@@ -258,8 +273,8 @@
 
 .aeux-user-name {
   font-size: 12px;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 600;
+  color: var(--theme-text-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -267,13 +282,13 @@
 
 .aeux-user-tag {
   font-size: 10px;
-  color: #799f97;
+  color: var(--theme-text-muted);
 }
 
 .aeux-logout-btn {
   background: transparent;
   border: none;
-  color: #799f97;
+  color: var(--theme-text-muted);
   cursor: pointer;
   padding: 4px;
   border-radius: 6px;
@@ -284,15 +299,15 @@
 }
 
 .aeux-logout-btn:hover {
-  color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
+  color: var(--theme-critical);
+  background: var(--theme-critical-bg);
 }
 
-/* RIGHT MAIN CANVAS (Full Screen Flow) */
+/* RIGHT MAIN CANVAS */
 .aeux-main-content {
   flex: 1;
   height: 100vh;
-  background: #f4f8f6;
+  background-color: var(--theme-canvas);
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;

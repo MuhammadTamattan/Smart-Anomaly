@@ -235,7 +235,7 @@
 .register-field input {
   width: 100%;
   height: 44px;
-  padding: 0 48px 0 46px;
+  padding: 0 48px 0 46px !important;
   background: rgba(6, 26, 23, 0.85);
   border: 1px solid rgba(0, 214, 143, 0.22);
   border-radius: 10px;
