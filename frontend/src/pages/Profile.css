@@ -4,25 +4,25 @@
    ========================================================================== */
 
 :root {
-  --pf-forest-primary: #0c3631;
-  --pf-forest-dark: #072521;
-  --pf-forest-light: #134e47;
-  --pf-forest-deep: #061f1c;
+  --pf-forest-primary: #07231c;
+  --pf-forest-dark: #040c0a;
+  --pf-forest-light: #00d68f;
+  --pf-forest-deep: #020a08;
   --pf-mint: #00d68f;
-  --pf-mint-hover: #05e399;
-  --pf-mint-dark: #059669;
-  --pf-mint-light: #e6f9f2;
+  --pf-mint-hover: #05e69b;
+  --pf-mint-dark: #00b887;
+  --pf-mint-light: rgba(0, 214, 143, 0.14);
   --pf-mint-glow: rgba(0, 214, 143, 0.35);
   --pf-coral: #f97316;
-  --pf-coral-light: #ffedd5;
-  --pf-canvas-bg: #f4f8f6;
-  --pf-card-bg: #ffffff;
-  --pf-text-main: #0c2b26;
-  --pf-text-sub: #46635c;
-  --pf-text-muted: #7e9c94;
-  --pf-border: #e2ece7;
+  --pf-coral-light: rgba(249, 115, 22, 0.16);
+  --pf-canvas-bg: var(--theme-canvas, #040c0a);
+  --pf-card-bg: var(--theme-card, #081713);
+  --pf-text-main: var(--theme-text-main, #ffffff);
+  --pf-text-sub: var(--theme-text-sub, #829d94);
+  --pf-text-muted: var(--theme-text-muted, #536c64);
+  --pf-border: var(--theme-border, rgba(0, 214, 143, 0.13));
   --pf-border-focus: #00d68f;
-  --pf-radius-card: 20px;
+  --pf-radius-card: 16px;
 }
 
 .soc-profile-wrapper {

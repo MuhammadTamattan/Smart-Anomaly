@@ -5,22 +5,22 @@
    ========================================================================== */
 
 :root {
-  --web-forest: #0c3631;
-  --web-forest-dark: #072521;
-  --web-forest-light: #134e47;
+  --web-forest: #07231c;
+  --web-forest-dark: #040c0a;
+  --web-forest-light: #00d68f;
   --web-mint: #00d68f;
-  --web-mint-dark: #059669;
-  --web-mint-light: #e6f9f2;
+  --web-mint-dark: #00b887;
+  --web-mint-light: rgba(0, 214, 143, 0.14);
   --web-coral: #f97316;
-  --web-coral-light: #ffedd5;
+  --web-coral-light: rgba(249, 115, 22, 0.16);
   --web-red: #ef4444;
-  --web-red-light: #fee2e2;
-  --web-canvas: #f4f8f6;
-  --web-card-bg: #ffffff;
-  --web-border: #e8f1ed;
-  --web-text-main: #0f2420;
-  --web-text-sub: #526b65;
-  --web-text-muted: #839b95;
+  --web-red-light: rgba(239, 68, 68, 0.16);
+  --web-canvas: var(--theme-canvas, #040c0a);
+  --web-card-bg: var(--theme-card, #081713);
+  --web-border: var(--theme-border, rgba(0, 214, 143, 0.13));
+  --web-text-main: var(--theme-text-main, #ffffff);
+  --web-text-sub: var(--theme-text-sub, #829d94);
+  --web-text-muted: var(--theme-text-muted, #536c64);
 }
 
 .web-page-root {

@@ -5,20 +5,20 @@
    ========================================================================== */
 
 :root {
-  --lu-forest: #0c3631;
-  --lu-forest-dark: #072521;
-  --lu-forest-light: #134e47;
+  --lu-forest: #07231c;
+  --lu-forest-dark: #040c0a;
+  --lu-forest-light: #00d68f;
   --lu-mint: #00d68f;
-  --lu-mint-dark: #059669;
-  --lu-mint-light: #e6f9f2;
+  --lu-mint-dark: #00b887;
+  --lu-mint-light: rgba(0, 214, 143, 0.14);
   --lu-coral: #f97316;
-  --lu-coral-light: #ffedd5;
-  --lu-canvas: #f4f8f6;
-  --lu-card-bg: #ffffff;
-  --lu-border: #e8f1ed;
-  --lu-text-main: #0f2420;
-  --lu-text-sub: #526b65;
-  --lu-text-muted: #839b95;
+  --lu-coral-light: rgba(249, 115, 22, 0.16);
+  --lu-canvas: var(--theme-canvas, #040c0a);
+  --lu-card-bg: var(--theme-card, #081713);
+  --lu-border: var(--theme-border, rgba(0, 214, 143, 0.13));
+  --lu-text-main: var(--theme-text-main, #ffffff);
+  --lu-text-sub: var(--theme-text-sub, #829d94);
+  --lu-text-muted: var(--theme-text-muted, #536c64);
 }
 
 .lu-page-root {

@@ -6,6 +6,13 @@ export const protect = async (req, res, next) => {
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.query?.token) {
+    token = req.query.token;
+  } else if (req.headers.cookie) {
+    const match = req.headers.cookie.match(/(?:^|;\s*)token=([^;]+)/);
+    if (match) {
+      token = match[1];
+    }
   }
 
   if (!token) {
@@ -14,11 +21,17 @@ export const protect = async (req, res, next) => {
 
   try {
     if (token === 'demo-token-soc-2026') {
-      const demoUser = await User.findOne({ email: 'demo@soc.io' });
-      if (demoUser) {
-        req.user = demoUser;
-        return next();
+      let demoUser = await User.findOne({ email: 'demo@soc.io' });
+      if (!demoUser) {
+        demoUser = await User.create({
+          name: 'Alex Vance (Lead Analyst)',
+          email: 'demo@soc.io',
+          password: 'demo123',
+          role: 'admin',
+        });
       }
+      req.user = demoUser;
+      return next();
     }
     const jwtSecret = process.env.JWT_SECRET || 'smart_anomaly_detection_jwt_secret_2026';
     const decoded = jwt.verify(token, jwtSecret);

@@ -13,7 +13,7 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import WebsiteScanner from './pages/WebsiteScanner';
 import ReportIncident from './pages/ReportIncident';
-import IncidentManagement from './pages/IncidentManagement';
+import LandingPage from './pages/LandingPage';
 
 function App() {
   return (
@@ -21,6 +21,9 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<LandingPage />} />
+            <Route path="/landing" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
@@ -36,7 +39,6 @@ function App() {
               <Route path="/website-scanner" element={<WebsiteScanner />} />
               <Route path="/report-incident" element={<ReportIncident />} />
               <Route path="/alerts" element={<Alerts />} />
-              <Route path="/incident-management" element={<IncidentManagement />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Navigate to="/settings" replace />} />

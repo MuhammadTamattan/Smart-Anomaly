@@ -5,20 +5,20 @@
    ========================================================================== */
 
 :root {
-  --alt-forest: #0c3631;
-  --alt-forest-dark: #072521;
-  --alt-forest-light: #134e47;
+  --alt-forest: #07231c;
+  --alt-forest-dark: #040c0a;
+  --alt-forest-light: #00d68f;
   --alt-mint: #00d68f;
-  --alt-mint-dark: #059669;
-  --alt-mint-light: #e6f9f2;
+  --alt-mint-dark: #00b887;
+  --alt-mint-light: rgba(0, 214, 143, 0.14);
   --alt-coral: #f97316;
-  --alt-coral-light: #ffedd5;
-  --alt-canvas: #f4f8f6;
-  --alt-card-bg: #ffffff;
-  --alt-border: #e8f1ed;
-  --alt-text-main: #0f2420;
-  --alt-text-sub: #526b65;
-  --alt-text-muted: #839b95;
+  --alt-coral-light: rgba(249, 115, 22, 0.16);
+  --alt-canvas: var(--theme-canvas, #040c0a);
+  --alt-card-bg: var(--theme-card, #081713);
+  --alt-border: var(--theme-border, rgba(0, 214, 143, 0.13));
+  --alt-text-main: var(--theme-text-main, #ffffff);
+  --alt-text-sub: var(--theme-text-sub, #829d94);
+  --alt-text-muted: var(--theme-text-muted, #536c64);
 }
 
 .alt-page-root {

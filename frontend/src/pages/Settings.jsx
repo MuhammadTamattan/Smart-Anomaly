@@ -735,7 +735,7 @@ export default function Settings() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6h8c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
               </span>
               <span>
-                Theme choice is saved locally and applies across the Sidebar, Dashboard, Cards, Tables, Charts, Forms, Alerts, ML Analysis, Log Upload, Website Scanner, Incident Management, Reports, Settings, and the Floating AI Assistant.
+                Theme choice is saved locally and applies across the Sidebar, Dashboard, Cards, Tables, Charts, Forms, Alerts, ML Analysis, Log Upload, Website Scanner, Reports, Settings, and the Floating AI Assistant.
               </span>
             </div>
           </div>

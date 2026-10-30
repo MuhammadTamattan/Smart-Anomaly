@@ -5,20 +5,20 @@
    ========================================================================== */
 
 :root {
-  --rpt-forest: #0c3631;
-  --rpt-forest-dark: #072521;
-  --rpt-forest-light: #134e47;
+  --rpt-forest: #07231c;
+  --rpt-forest-dark: #040c0a;
+  --rpt-forest-light: #00d68f;
   --rpt-mint: #00d68f;
-  --rpt-mint-dark: #059669;
-  --rpt-mint-light: #e6f9f2;
+  --rpt-mint-dark: #00b887;
+  --rpt-mint-light: rgba(0, 214, 143, 0.14);
   --rpt-coral: #f97316;
-  --rpt-coral-light: #ffedd5;
-  --rpt-canvas: #f4f8f6;
-  --rpt-card-bg: #ffffff;
-  --rpt-border: #e8f1ed;
-  --rpt-text-main: #0f2420;
-  --rpt-text-sub: #526b65;
-  --rpt-text-muted: #839b95;
+  --rpt-coral-light: rgba(249, 115, 22, 0.16);
+  --rpt-canvas: var(--theme-canvas, #040c0a);
+  --rpt-card-bg: var(--theme-card, #081713);
+  --rpt-border: var(--theme-border, rgba(0, 214, 143, 0.13));
+  --rpt-text-main: var(--theme-text-main, #ffffff);
+  --rpt-text-sub: var(--theme-text-sub, #829d94);
+  --rpt-text-muted: var(--theme-text-muted, #536c64);
 }
 
 .rpt-page-root {

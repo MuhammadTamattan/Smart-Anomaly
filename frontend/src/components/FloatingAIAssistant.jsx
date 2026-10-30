@@ -30,11 +30,6 @@ export default function FloatingAIAssistant() {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Strictly for Admin users
-  if (user?.role !== 'admin') {
-    return null;
-  }
-
   // Scroll to bottom when new messages arrive or loading
   useEffect(() => {
     if (isOpen) {
@@ -50,6 +45,11 @@ export default function FloatingAIAssistant() {
       }, 150);
     }
   }, [isOpen]);
+
+  // Strictly for Admin users
+  if (user?.role !== 'admin') {
+    return null;
+  }
 
   const handleToggle = () => {
     setIsOpen((prev) => !prev);
@@ -393,9 +393,12 @@ export default function FloatingAIAssistant() {
           <span className="soc-float-close-icon">✕</span>
         ) : (
           <div className="soc-float-btn-icon-wrap">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00d68f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              <path d="M9 12l2 2 4-4" />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="3" />
+              <circle cx="12" cy="5" r="2" />
+              <path d="M12 7v4" />
+              <line x1="8" y1="16" x2="8.01" y2="16" strokeWidth="3" />
+              <line x1="16" y1="16" x2="16.01" y2="16" strokeWidth="3" />
             </svg>
             <span className="soc-float-btn-badge" />
           </div>

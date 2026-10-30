@@ -17,7 +17,17 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      const currentPath = window.location.pathname;
+      const isPublicPath =
+        currentPath === '/' ||
+        currentPath === '/home' ||
+        currentPath === '/landing' ||
+        currentPath.startsWith('/login') ||
+        currentPath.startsWith('/register');
+
+      if (!isPublicPath) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
