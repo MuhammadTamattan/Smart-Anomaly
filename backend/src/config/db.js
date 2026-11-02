@@ -17,6 +17,19 @@ const connectDB = async () => {
     console.log(`[MongoDB] Connecting to database...`);
     const conn = await mongoose.connect(uriToConnect);
     console.log(`[MongoDB] Successfully Connected to ${conn.connection.host}:${conn.connection.port}/${conn.connection.name}`);
+
+    // Ensure all existing legacy users (including existing Main Admin) are preserved as 'approved'
+    try {
+      const result = await conn.connection.collection('users').updateMany(
+        { status: { $exists: false } },
+        { $set: { status: 'approved' } }
+      );
+      if (result.modifiedCount > 0) {
+        console.log(`[MongoDB] Preserved ${result.modifiedCount} existing account(s) as approved.`);
+      }
+    } catch (migErr) {
+      console.warn('[MongoDB] Non-critical user status check notice:', migErr.message);
+    }
     return conn;
   } catch (error) {
     console.error(`[MongoDB] Connection Error: ${error.message}`);

@@ -4,10 +4,10 @@ import api from '../services/api';
 import './FloatingAIAssistant.css';
 
 const QUICK_PROMPTS = [
-  'Summarize recent threats',
-  'What needs attention?',
-  'Explain the latest anomaly',
-  'Show critical alerts',
+  'Summarize Recent Threats',
+  'What Needs Attention?',
+  'Explain the Latest Anomaly',
+  'Show Critical Alerts',
 ];
 
 export default function FloatingAIAssistant() {
@@ -81,7 +81,7 @@ export default function FloatingAIAssistant() {
           text: m.text,
         }));
 
-      const res = await api.post('/api/ai-assistant/chat', {
+      const res = await api.post('/ai-assistant/chat', {
         message: textToSend,
         history: historyPayload,
       });
@@ -201,8 +201,18 @@ export default function FloatingAIAssistant() {
         return parts;
       };
 
+      const numMatch = line.trim().match(/^(\d+)\.\s+(.*)$/);
+      if (numMatch) {
+        return (
+          <div key={idx} className="soc-float-bullet-row">
+            <span className="soc-float-bullet-num">{numMatch[1]}.</span>
+            <div className="soc-float-bullet-content">{formatSpans(numMatch[2])}</div>
+          </div>
+        );
+      }
+
       if (line.trim().startsWith('• ') || line.trim().startsWith('- ')) {
-        const cleanBullet = line.trim().replace(/^[•\-]\s*/, '');
+        const cleanBullet = line.trim().replace(/^[•-]\s*/, '');
         return (
           <div key={idx} className="soc-float-bullet-row">
             <span className="soc-float-bullet-dot">▸</span>
@@ -324,6 +334,12 @@ export default function FloatingAIAssistant() {
                     <div className="soc-float-bubble-text">
                       {renderFormattedText(msg.text)}
                     </div>
+                    {!isUser && !msg.isError && msg.metadata?.groundedContextSummary && (
+                      <div className="soc-float-grounding-tag">
+                        <span className="soc-float-grounding-dot" />
+                        <span>Grounded: {msg.metadata.groundedContextSummary.activeAlerts ?? 0} active alerts · Threat Index {msg.metadata.groundedContextSummary.threatIndex ?? 0}/100</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

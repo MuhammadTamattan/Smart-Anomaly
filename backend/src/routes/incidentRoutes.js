@@ -12,8 +12,8 @@ import { protect, adminOnly } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Incident management routes are protected for authenticated users
-router.use(protect);
+// Incident management routes are protected for authenticated admin users
+router.use(protect, adminOnly);
 
 router.get('/stats', getIncidentStats);
 router.get('/', getIncidents);

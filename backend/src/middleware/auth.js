@@ -28,6 +28,7 @@ export const protect = async (req, res, next) => {
           email: 'demo@soc.io',
           password: 'demo123',
           role: 'admin',
+          status: 'approved',
         });
       }
       req.user = demoUser;
@@ -39,6 +40,13 @@ export const protect = async (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ message: 'Not authorized, user not found' });
     }
+    const userStatus = req.user.status || (req.user.role === 'admin' ? 'approved' : 'pending');
+    if (userStatus === 'pending') {
+      return res.status(403).json({ message: 'Your account is awaiting administrator approval.' });
+    }
+    if (userStatus === 'rejected') {
+      return res.status(403).json({ message: 'Your registration was rejected.' });
+    }
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Not authorized, token failed' });
@@ -46,7 +54,8 @@ export const protect = async (req, res, next) => {
 };
 
 export const adminOnly = (req, res, next) => {
-  if (req.user) {
+  const isApproved = req.user?.status === 'approved' || !req.user?.status;
+  if (req.user && req.user.role === 'admin' && isApproved) {
     return next();
   }
   return res.status(403).json({ message: 'Access denied, admin only' });

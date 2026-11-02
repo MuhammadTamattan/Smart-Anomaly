@@ -205,4 +205,58 @@ describe('AI Security Assistant - POST /api/ai-assistant/chat', () => {
     expect(resDashboard.status).toBe(200);
     expect(resDashboard.body.totalAlerts).toBeDefined();
   });
+
+  // Test 8: Quick Action - Summarize Recent Threats
+  it('8. should handle quick action "Summarize Recent Threats" with grounded response', async () => {
+    const res = await request(app)
+      .post('/api/ai-assistant/chat')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ message: 'Summarize Recent Threats' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.reply).toContain('Latest Security Threats Report');
+    expect(res.body.reply).toContain('Repeated Failed Logins');
+  });
+
+  // Test 9: Quick Action - What Needs Attention?
+  it('9. should handle quick action "What Needs Attention?" with grounded response', async () => {
+    const res = await request(app)
+      .post('/api/ai-assistant/chat')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ message: 'What Needs Attention?' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.reply).toContain('Alerts Requiring Immediate Attention');
+    expect(res.body.reply).toContain('Repeated Failed Logins');
+  });
+
+  // Test 10: Quick Action - Explain the Latest Anomaly
+  it('10. should handle quick action "Explain the Latest Anomaly" with grounded response', async () => {
+    const res = await request(app)
+      .post('/api/ai-assistant/chat')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ message: 'Explain the Latest Anomaly' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.reply).toContain('Latest Anomaly Explanation');
+    expect(res.body.reply).toContain('auth-audit.log');
+    expect(res.body.reply).toContain('Isolation Forest');
+  });
+
+  // Test 11: Quick Action - Show Critical Alerts
+  it('11. should handle quick action "Show Critical Alerts" with grounded response', async () => {
+    const res = await request(app)
+      .post('/api/ai-assistant/chat')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ message: 'Show Critical Alerts' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.reply).toContain('Critical Security Alerts');
+    expect(res.body.reply).toContain('Repeated Failed Logins');
+    expect(res.body.reply).toContain('CRITICAL');
+  });
 });

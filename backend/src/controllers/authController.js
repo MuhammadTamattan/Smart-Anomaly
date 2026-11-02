@@ -20,14 +20,26 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const user = await User.create({ name, email, password });
+    // Always enforce 'user' role and 'pending' status for public registrations
+    // Do not trust role or status sent from request body
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: 'user',
+      status: 'pending',
+    });
 
     res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      token: generateToken(user._id),
+      success: true,
+      message: 'Registration submitted. Waiting for administrator approval.',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+      },
     });
   } catch (error) {
     next(error);
@@ -47,11 +59,27 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    const userStatus = user.status || (user.role === 'admin' ? 'approved' : 'pending');
+    if (userStatus === 'pending') {
+      return res.status(403).json({
+        message: 'Your account is awaiting administrator approval.',
+        status: 'pending',
+      });
+    }
+
+    if (userStatus === 'rejected') {
+      return res.status(403).json({
+        message: 'Your registration was rejected.',
+        status: 'rejected',
+      });
+    }
+
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
+      status: user.status || 'approved',
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -187,6 +215,83 @@ export const changePassword = async (req, res, next) => {
     await user.save();
 
     res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getRegistrationRequests = async (req, res, next) => {
+  try {
+    const { status } = req.query;
+    const query = { role: { $ne: 'admin' } };
+    if (status && ['pending', 'approved', 'rejected'].includes(status)) {
+      query.status = status;
+    }
+
+    const requests = await User.find(query)
+      .select('_id name email role status department roleTitle clearance createdAt updatedAt')
+      .sort({ createdAt: -1 });
+
+    res.json(requests);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const approveRegistrationRequest = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.status = 'approved';
+    await user.save();
+
+    res.json({
+      success: true,
+      message: `Account for ${user.name} (${user.email}) approved successfully.`,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const rejectRegistrationRequest = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (req.user._id.toString() === id.toString()) {
+      return res.status(400).json({ message: 'Cannot reject your own admin account' });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.status = 'rejected';
+    await user.save();
+
+    res.json({
+      success: true,
+      message: `Account registration for ${user.name} (${user.email}) was rejected.`,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+      },
+    });
   } catch (error) {
     next(error);
   }
