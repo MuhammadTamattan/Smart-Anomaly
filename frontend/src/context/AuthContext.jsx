@@ -48,8 +48,8 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data);
       return res.data;
     } catch (err) {
-      // If demo credentials or backend offline fallback:
-      if (!err.response || email === 'demo@soc.io' || password === 'demo123') {
+      // If backend is offline (no network response) and using demo credentials:
+      if (!err.response && (email === 'demo@soc.io' || password === 'demo123')) {
         localStorage.setItem('token', 'demo-token-soc-2026');
         setUser(DEMO_OPERATOR);
         return DEMO_OPERATOR;
@@ -65,18 +65,20 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', res.data.token);
       setUser(res.data);
       return res.data;
-    } catch {
-      localStorage.setItem('token', 'demo-token-soc-2026');
-      setUser(DEMO_OPERATOR);
-      return DEMO_OPERATOR;
+    } catch (err) {
+      if (!err.response) {
+        localStorage.setItem('token', 'demo-token-soc-2026');
+        setUser(DEMO_OPERATOR);
+        return DEMO_OPERATOR;
+      }
+      throw err;
     }
   };
 
   const register = async (name, email, password) => {
     sessionStorage.removeItem('soc_logged_out');
     const res = await api.post('/auth/register', { name, email, password });
-    localStorage.setItem('token', res.data.token);
-    setUser(res.data);
+    // Account is pending administrator approval - do not automatically log in or store token
     return res.data;
   };
 

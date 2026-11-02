@@ -100,6 +100,56 @@ export default function Settings() {
     }, 4000);
   }, []);
 
+  // 5. Admin Registration Requests State
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
+  const [requestActionId, setRequestActionId] = useState(null);
+
+  const fetchPendingRequests = useCallback(async () => {
+    if (user?.role !== 'admin') return;
+    try {
+      setLoadingRequests(true);
+      const res = await api.get('/auth/registration-requests?status=pending');
+      setPendingRequests(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to load registration requests', 'error');
+    } finally {
+      setLoadingRequests(false);
+    }
+  }, [user?.role, showToast]);
+
+  useEffect(() => {
+    if (activeTab === 'requests') {
+      fetchPendingRequests();
+    }
+  }, [activeTab, fetchPendingRequests]);
+
+  const handleApproveFromSettings = async (id, name, email) => {
+    try {
+      setRequestActionId(id);
+      await api.patch(`/auth/registration-requests/${id}/approve`);
+      setPendingRequests((prev) => prev.filter((r) => r._id !== id));
+      showToast(`Account for ${name} (${email}) approved successfully.`);
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to approve request', 'error');
+    } finally {
+      setRequestActionId(null);
+    }
+  };
+
+  const handleRejectFromSettings = async (id, name, email) => {
+    try {
+      setRequestActionId(id);
+      await api.patch(`/auth/registration-requests/${id}/reject`);
+      setPendingRequests((prev) => prev.filter((r) => r._id !== id));
+      showToast(`Account registration for ${name} (${email}) was rejected.`, 'error');
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to reject request', 'error');
+    } finally {
+      setRequestActionId(null);
+    }
+  };
+
   // Fetch verified profile on mount
   useEffect(() => {
     let isMounted = true;
@@ -403,6 +453,34 @@ export default function Settings() {
             </svg>
             4. Security
           </button>
+
+          {user?.role === 'admin' && (
+            <button
+              type="button"
+              className={`soc-settings-tab-btn ${activeTab === 'requests' ? 'active' : ''}`}
+              onClick={() => setActiveTab('requests')}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="8.5" cy="7" r="4" />
+                <polyline points="17 11 19 13 23 9" />
+              </svg>
+              5. Registration Requests
+              {pendingRequests.length > 0 && (
+                <span style={{
+                  background: '#f59e0b',
+                  color: '#041a14',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  padding: '1px 6px',
+                  borderRadius: '10px',
+                  marginLeft: '4px',
+                }}>
+                  {pendingRequests.length}
+                </span>
+              )}
+            </button>
+          )}
         </div>
 
         {/* ==================================================================
@@ -956,6 +1034,166 @@ export default function Settings() {
                   Log Out
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ==================================================================
+            TAB 5: REGISTRATION REQUESTS (ADMIN ONLY)
+            ================================================================== */}
+        {activeTab === 'requests' && user?.role === 'admin' && (
+          <div className="soc-settings-card">
+            <div className="soc-settings-card-head" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div className="soc-settings-icon-bubble" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <polyline points="17 11 19 13 23 9" />
+                  </svg>
+                </div>
+                <div>
+                  <h2>Registration Requests Queue</h2>
+                  <p>Authorize or deny account requests submitted via the registration portal.</p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button
+                  type="button"
+                  className="soc-btn-ghost-sm"
+                  onClick={fetchPendingRequests}
+                  disabled={loadingRequests}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--theme-border)',
+                    background: 'none',
+                    color: 'var(--theme-text-main)',
+                    cursor: 'pointer',
+                    fontSize: '12.5px',
+                    fontWeight: '600',
+                  }}
+                >
+                  {loadingRequests ? 'Refreshing...' : 'Refresh'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/registration-requests')}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#00d68f',
+                    color: '#052019',
+                    cursor: 'pointer',
+                    fontSize: '12.5px',
+                    fontWeight: '700',
+                  }}
+                >
+                  Open Full Requests Portal &rarr;
+                </button>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '20px' }}>
+              {loadingRequests ? (
+                <div style={{ padding: '36px', textAlign: 'center', color: 'var(--theme-text-muted)' }}>
+                  Loading pending registration requests...
+                </div>
+              ) : pendingRequests.length === 0 ? (
+                <div style={{
+                  padding: '40px 24px',
+                  textAlign: 'center',
+                  background: 'rgba(0, 0, 0, 0.15)',
+                  border: '1px dashed var(--theme-border)',
+                  borderRadius: '12px',
+                }}>
+                  <div style={{ fontSize: '28px', marginBottom: '8px' }}>✓</div>
+                  <strong style={{ display: 'block', color: 'var(--theme-text-main)', marginBottom: '4px' }}>
+                    No Pending Registration Requests
+                  </strong>
+                  <span style={{ fontSize: '13px', color: 'var(--theme-text-sub)' }}>
+                    All applicant accounts have been reviewed. When new users register, they will appear here.
+                  </span>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {pendingRequests.map((req) => (
+                    <div
+                      key={req._id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '14px 18px',
+                        background: 'rgba(0, 0, 0, 0.2)',
+                        border: '1px solid var(--theme-border)',
+                        borderRadius: '10px',
+                        flexWrap: 'wrap',
+                        gap: '12px',
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: '700', color: 'var(--theme-text-main)' }}>{req.name}</div>
+                        <div style={{ fontSize: '12.5px', color: 'var(--theme-text-sub)' }}>
+                          {req.email} &bull; Requested: {new Date(req.createdAt).toLocaleDateString()}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{
+                          background: 'rgba(245, 158, 11, 0.15)',
+                          color: '#fbbf24',
+                          border: '1px solid rgba(245, 158, 11, 0.3)',
+                          padding: '4px 10px',
+                          borderRadius: '20px',
+                          fontSize: '11.5px',
+                          fontWeight: '700',
+                        }}>
+                          Pending Review
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => handleApproveFromSettings(req._id, req.name, req.email)}
+                          disabled={requestActionId === req._id}
+                          style={{
+                            padding: '6px 14px',
+                            background: '#00d68f',
+                            color: '#052019',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontWeight: '700',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Approve
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRejectFromSettings(req._id, req.name, req.email)}
+                          disabled={requestActionId === req._id}
+                          style={{
+                            padding: '6px 14px',
+                            background: 'rgba(239, 68, 68, 0.12)',
+                            color: '#f87171',
+                            border: '1px solid rgba(239, 68, 68, 0.35)',
+                            borderRadius: '6px',
+                            fontWeight: '600',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

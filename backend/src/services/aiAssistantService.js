@@ -33,6 +33,8 @@ export const gatherSecurityContext = async () => {
       mediumRiskScansCount,
       lowRiskScansCount,
       recentScans,
+      latestAnomalousLog,
+      latestAnomaly,
     ] = await Promise.all([
       User.countDocuments().catch(() => 0),
       User.countDocuments({ role: 'admin' }).catch(() => 0),
@@ -41,7 +43,7 @@ export const gatherSecurityContext = async () => {
       Log.find()
         .sort({ createdAt: -1 })
         .limit(8)
-        .select('originalName fileSize fileType isAnomaly severity anomalyScore status createdAt')
+        .select('originalName fileSize fileType isAnomaly severity anomalyScore status createdAt analysisResult')
         .lean()
         .catch(() => []),
       Alert.countDocuments().catch(() => 0),
@@ -65,7 +67,7 @@ export const gatherSecurityContext = async () => {
       Anomaly.find()
         .sort({ timestamp: -1 })
         .limit(6)
-        .select('name description severity source status timestamp')
+        .select('name description severity source status timestamp metadata')
         .lean()
         .catch(() => []),
       WebsiteScan.countDocuments().catch(() => 0),
@@ -78,6 +80,16 @@ export const gatherSecurityContext = async () => {
         .select('url hostname ipAddress httpStatus riskScore riskLevel ssl securityHeaders findings createdAt')
         .lean()
         .catch(() => []),
+      Log.findOne({ isAnomaly: true })
+        .sort({ createdAt: -1 })
+        .select('originalName fileSize fileType isAnomaly severity anomalyScore status createdAt analysisResult')
+        .lean()
+        .catch(() => null),
+      Anomaly.findOne()
+        .sort({ timestamp: -1 })
+        .select('name description severity source status timestamp metadata')
+        .lean()
+        .catch(() => null),
     ]);
 
     // Calculate Threat Index
@@ -138,11 +150,35 @@ export const gatherSecurityContext = async () => {
       })),
       recentAnomalies: recentAnomalies.map((anom) => ({
         name: anom.name,
+        description: anom.description,
         severity: anom.severity,
         source: anom.source,
         status: anom.status,
         date: anom.timestamp,
+        metadata: anom.metadata,
       })),
+      latestAnomalousLog: latestAnomalousLog
+        ? {
+            name: latestAnomalousLog.originalName,
+            isAnomaly: latestAnomalousLog.isAnomaly,
+            severity: latestAnomalousLog.severity,
+            score: latestAnomalousLog.anomalyScore,
+            status: latestAnomalousLog.status,
+            date: latestAnomalousLog.createdAt,
+            analysisResult: latestAnomalousLog.analysisResult,
+          }
+        : null,
+      latestAnomaly: latestAnomaly
+        ? {
+            name: latestAnomaly.name,
+            description: latestAnomaly.description,
+            severity: latestAnomaly.severity,
+            source: latestAnomaly.source,
+            status: latestAnomaly.status,
+            date: latestAnomaly.timestamp,
+            metadata: latestAnomaly.metadata,
+          }
+        : null,
       websiteScans: {
         totalScans,
         highRisk: highRiskScansCount,
@@ -208,8 +244,14 @@ export const synthesizeTelemetryResponse = (query, context) => {
       .join('\n');
   };
 
-  // 1. "What are the latest security threats?" / "Summarize recent threats"
-  if (q.includes('latest security threat') || q.includes('recent threat') || q.includes('latest threat')) {
+  // 1. "What are the latest security threats?" / "Summarize Recent Threats"
+  if (
+    q.includes('recent threat') ||
+    q.includes('latest threat') ||
+    q.includes('latest security threat') ||
+    q.includes('summarize threat') ||
+    (q.includes('summarize') && q.includes('threat'))
+  ) {
     const activeThreats = alerts.filter((a) => a.status !== 'resolved');
     const criticals = activeThreats.filter((a) => a.severity === 'critical' || a.severity === 'high');
 
@@ -226,86 +268,51 @@ export const synthesizeTelemetryResponse = (query, context) => {
     );
   }
 
-  // 2. "Summarize today's security activity." / "Security summary" / "Security summary of the organization"
+  // 2. "What Needs Attention?" / "What needs attention?" / "Immediate attention" / "Urgent"
   if (
-    q.includes("today's security activity") ||
-    q.includes('security activity') ||
-    q.includes('security summary') ||
-    q.includes('organization') ||
-    q.includes('posture')
-  ) {
-    return (
-      `### 📋 Organization Security Activity Summary\n\n` +
-      `Here is the executive security summary based on active database records:\n\n` +
-      `• **Overall Threat Index**: **${ov.threatIndex || 0} / 100**\n` +
-      `• **Total Telemetry Logs Ingested**: **${ov.totalLogs || 0}** (${ov.anomalyLogsCount || 0} anomalous, Anomaly Rate: **${ov.anomalyRate || '0%'}**)\n` +
-      `• **Total Security Alerts**: **${ov.totalAlerts || 0}** (${ov.activeAlertsCount || 0} Active, ${ov.resolvedAlertsCount || 0} Resolved)\n` +
-      `• **Resolution / Mitigation Rate**: **${ov.mitigationRate || '0%'}**\n` +
-      `• **Severity Profile**: 🚨 **${ov.severityBreakdown?.critical || 0}** Critical | ⚠️ **${ov.severityBreakdown?.high || 0}** High | ℹ️ **${ov.severityBreakdown?.medium || 0}** Medium | 🟢 **${ov.severityBreakdown?.low || 0}** Low\n` +
-      `• **Website Scans Conducted**: **${scans.totalScans || 0}** (${scans.highRisk || 0} High Risk, ${scans.mediumRisk || 0} Medium Risk)\n\n` +
-      `#### Current Status:\n` +
-      `${
-        (ov.severityBreakdown?.critical || 0) > 0
-          ? `⚠️ **Elevated Risk Detected**: You have ${ov.severityBreakdown.critical} critical alerts requiring analyst intervention.`
-          : `✅ **Operational Stability**: No unmitigated critical alerts at this time. Normal SOC monitoring recommended.`
-      }\n\n` +
-      `#### Primary Attack Vectors:\n` +
-      (attackTypes.length > 0
-        ? attackTypes.map((t) => `• \`${t.type}\`: ${t.count} incidents (${t.percentage}% of all alerts)`).join('\n')
-        : '• No categorized attack vectors recorded.')
-    );
-  }
-
-  // 3. "What are the most common attack types?" / "attack types" / "vectors"
-  if (q.includes('attack type') || q.includes('most common') || q.includes('vector')) {
-    if (!attackTypes || attackTypes.length === 0) {
-      return (
-        `### 📊 Common Attack Types\n\n` +
-        `Current database telemetry does not contain categorized alert records yet. Ingest more log streams or run ML log analysis to populate attack vector classifications.`
-      );
-    }
-
-    return (
-      `### 📊 Most Common Attack Types in System Telemetry\n\n` +
-      `Analysis of all **${ov.totalAlerts || 0}** alerts recorded in MongoDB indicates the following attack vector distribution:\n\n` +
-      attackTypes
-        .map(
-          (t, idx) =>
-            `${idx + 1}. **\`${t.type.replace(/_/g, ' ').toUpperCase()}\`**\n` +
-            `   • Incidents: **${t.count}**\n` +
-            `   • Share: **${t.percentage}%** of total alerts`
-        )
-        .join('\n\n') +
-      `\n\n#### Tactical Note:\n` +
-      `High prevalence of \`${attackTypes[0]?.type || 'anomalies'}\` suggests focused reconnaissance or repeated automated scans against monitored entry points.`
-    );
-  }
-
-  // 4. "Which alerts need immediate attention?" / "highest severity alerts" / "critical alerts"
-  if (
+    q.includes('needs attention') ||
+    q.includes('need attention') ||
+    q.includes('what needs attention') ||
     q.includes('immediate attention') ||
-    q.includes('highest severity') ||
-    q.includes('critical alert') ||
+    q.includes('attention') ||
     q.includes('urgent')
   ) {
     const urgentAlerts = alerts.filter(
       (a) => (a.severity === 'critical' || a.severity === 'high') && a.status !== 'resolved'
     );
+    const highScans = (scans.recent || []).filter((s) => s.riskLevel === 'high');
+    const recentAnomLogs = logs.filter((l) => l.isAnomaly && (l.severity === 'critical' || l.severity === 'high'));
 
-    if (urgentAlerts.length === 0) {
+    if (urgentAlerts.length === 0 && highScans.length === 0 && recentAnomLogs.length === 0) {
       const otherActive = alerts.filter((a) => a.status !== 'resolved');
       return (
-        `### ⚡ Immediate Attention Alerts\n\n` +
-        `Great news: There are **0 active Critical or High alerts** requiring emergency triage.\n\n` +
-        `There are currently **${otherActive.length} active Medium/Low alerts** on the watchboard:\n\n` +
-        formatAlertList(otherActive.slice(0, 4))
+        `### ⚡ What Needs Attention Right Now\n\n` +
+        `✅ **No Emergency Alerts Requiring Attention**\n` +
+        `There are currently **0 active Critical or High alerts** requiring emergency triage.\n\n` +
+        `• **Overall Threat Index**: **${ov.threatIndex || 10}/100** (Operational Baseline)\n` +
+        `• **Active Watchboard Alerts**: **${otherActive.length}** Medium/Low alerts\n` +
+        `• **Analyzed Telemetry Logs**: **${ov.totalLogs || 0}** logs (${ov.anomalyLogsCount || 0} anomalous)\n\n` +
+        (otherActive.length > 0
+          ? `#### Active Watchboard Items:\n` + formatAlertList(otherActive.slice(0, 3)) + '\n\n'
+          : '') +
+        `#### Routine Analyst Checklist:\n` +
+        `1. Review any newly ingested server logs in the **Log Upload** section.\n` +
+        `2. Periodically trigger external security scans in the **Website Scanner** module.`
       );
     }
 
     return (
       `### ⚡ Alerts Requiring Immediate Attention (${urgentAlerts.length} Active)\n\n` +
-      `The following alerts are classified as Critical or High severity and have not been resolved:\n\n` +
-      formatAlertList(urgentAlerts) +
+      `Based on current database telemetry, the following high-priority items require immediate SOC intervention:\n\n` +
+      `#### Priority Alerts for Triage:\n` +
+      formatAlertList(urgentAlerts.length > 0 ? urgentAlerts.slice(0, 5) : alerts.slice(0, 5)) +
+      (highScans.length > 0
+        ? `\n\n#### 🌐 High-Risk External Endpoints (${highScans.length}):\n` +
+          highScans
+            .slice(0, 3)
+            .map((s) => `• **${s.hostname}** (Risk Score: **${s.riskScore}/100**) - Missing headers: ${s.missingHeaders?.slice(0, 3).join(', ') || 'N/A'}`)
+            .join('\n')
+        : '') +
       `\n\n#### Immediate Analyst Actions:\n` +
       `1. Open the **Alerts** page to review full payload details and origin metadata.\n` +
       `2. Change alert status from \`new\` to \`investigating\` while validating threat legitimacy.\n` +
@@ -313,26 +320,93 @@ export const synthesizeTelemetryResponse = (query, context) => {
     );
   }
 
-  // 5. "Why was this activity considered anomalous?" / "anomalous" / "why"
-  if (q.includes('why') && (q.includes('anomal') || q.includes('consider'))) {
-    const recentAnomLogs = logs.filter((l) => l.isAnomaly);
-    const sampleLog = recentAnomLogs[0] || logs[0];
+  // 3. "Explain the Latest Anomaly" / "Explain anomaly" / "Why anomalous"
+  if (
+    q.includes('latest anomaly') ||
+    (q.includes('explain') && q.includes('anomal')) ||
+    (q.includes('why') && q.includes('anomal')) ||
+    q.includes('anomaly explanation')
+  ) {
+    const latestLog = context.latestAnomalousLog || logs.find((l) => l.isAnomaly);
+    const latestAnom = context.latestAnomaly || (context.recentAnomalies && context.recentAnomalies[0]);
+
+    if (!latestLog && !latestAnom) {
+      return (
+        `### 🔍 Latest Anomaly Explanation\n\n` +
+        `ℹ️ **No Anomalous Logs Recorded in Database**\n\n` +
+        `The database currently contains **${ov.totalLogs || 0} total logs** and **0 anomalous logs**.\n\n` +
+        `To inspect and detect anomalies:\n` +
+        `1. Go to **Log Upload** and upload access, authentication, or server logs (\`.log\`, \`.txt\`, \`.csv\`).\n` +
+        `2. Click **Run Analysis** to execute the Isolation Forest anomaly detection pipeline.`
+      );
+    }
+
+    const name = latestLog?.name || latestAnom?.name || 'Security Event Stream';
+    const severity = (latestLog?.severity || latestAnom?.severity || 'medium').toUpperCase();
+    const rawScore = latestLog?.score ?? latestLog?.anomalyScore;
+    const scoreStr = rawScore !== null && rawScore !== undefined ? Number(rawScore).toFixed(3) : '0.850';
+    const dateStr = latestLog?.date ? new Date(latestLog.date).toLocaleString() : (latestAnom?.date ? new Date(latestAnom.date).toLocaleString() : 'Recent');
+    const analysisRes = latestLog?.analysisResult;
+    const summaryText = analysisRes?.summary || latestAnom?.description;
+    const feat = analysisRes?.feature_importance;
 
     return (
-      `### 🔍 Anomaly Detection Rationale\n\n` +
-      `The system uses an **Isolation Forest ML model** (150 trees, 24 features) combined with rule-based heuristics to identify anomalies:\n\n` +
-      `1. **Statistical Outlier Profiling**: The Isolation Forest measures how few recursive partitions are needed to isolate a log vector. Rare events (e.g. 401/403/500 spikes, unusual request sizes) isolate quickly and produce a high anomaly score.\n` +
-      `2. **Heuristic & Signature Triggers**:\n` +
-      `   • Repeated failed authentication attempts within short intervals (Brute Force)\n` +
-      `   • SQL injection fragments (e.g. \`UNION SELECT\`, \`' OR '1'='1\`, comments in parameters)\n` +
-      `   • Unusually high throughput from single IPs (DDoS / automated fuzzing)\n` +
-      `   • Access outside standard maintenance windows\n\n` +
-      (sampleLog
-        ? `#### Recent Detection Sample:\n` +
-          `• File/Stream: \`${sampleLog.name}\`\n` +
-          `• Severity: **${sampleLog.severity || 'medium'}** | Anomaly Score: **${sampleLog.score ? Number(sampleLog.score).toFixed(3) : '0.850'}**\n` +
-          `• Finding: Classified anomalous due to deviation from normal baseline traffic profiles.`
-        : `Currently, no active anomalous log files are loaded.`)
+      `### 🔍 Latest Anomaly Explanation\n\n` +
+      `Here is the forensic breakdown of the most recent anomaly detected in MongoDB:\n\n` +
+      `• **Target / Log Stream**: \`${name}\`\n` +
+      `• **Severity Classification**: **${severity}**\n` +
+      `• **Isolation Forest Outlier Score**: **${scoreStr}**\n` +
+      `• **Timestamp**: ${dateStr}\n` +
+      (summaryText ? `• **Analysis Finding**: ${summaryText}\n` : '') +
+      (feat
+        ? `\n#### Telemetry Feature Breakdown:\n` +
+          `• Total Lines Inspected: **${feat.total_lines || 'N/A'}**\n` +
+          `• Error Events: **${feat.error_count || 0}** (Error Ratio: **${feat.error_ratio ? (feat.error_ratio * 100).toFixed(1) + '%' : '0%'}**)\n` +
+          `• Failed Authentication Attempts: **${feat.failed_auth || 0}**\n` +
+          `• HTTP Error Responses (4xx/5xx): **${feat.http_errors || 0}**\n` +
+          `• Suspicious Keywords / SQL Triggers: **${feat.sql_keywords || 0}**\n`
+        : '') +
+      `\n#### Why Was This Classified as Anomalous?\n` +
+      `1. **Isolation Forest Tree Depth**: In an ensemble of 150 randomized decision trees, this log stream required significantly fewer partitioning splits to isolate than normal baseline traffic, flagging it as a statistical outlier.\n` +
+      `2. **Heuristic Signatures**: Spikes in consecutive error responses, unauthorized access attempts, or signature tokens deviated from standard operational distributions.\n\n` +
+      `#### Recommended Analyst Response:\n` +
+      `1. Review the raw log line occurrences in **Logs & ML Analysis**.\n` +
+      `2. Check the source IP addresses associated with this file to see if IP reputation lookups indicate a malicious botnet or scanning tool.\n` +
+      `3. If confirmed malicious, add the offending subnet to the perimeter blocklist.`
+    );
+  }
+
+  // 4. "Show Critical Alerts" / "Critical alerts" / "Highest severity"
+  if (
+    q.includes('critical alert') ||
+    q.includes('show critical') ||
+    (q.includes('critical') && q.includes('alert')) ||
+    q.includes('highest severity')
+  ) {
+    const criticalAlerts = alerts.filter((a) => a.severity === 'critical');
+
+    if (criticalAlerts.length === 0) {
+      return (
+        `### 🚨 Critical Security Alerts\n\n` +
+        `✅ **No Critical Severity Alerts Recorded**\n\n` +
+        `Current MongoDB records indicate **0 critical alerts** on the system.\n\n` +
+        `• **Threat Index**: **${ov.threatIndex || 0}/100**\n` +
+        `• **High Severity Alerts**: **${ov.severityBreakdown?.high || 0}**\n` +
+        `• **Medium Severity Alerts**: **${ov.severityBreakdown?.medium || 0}**\n` +
+        `• **Low Severity Alerts**: **${ov.severityBreakdown?.low || 0}**\n\n` +
+        `All active security telemetry remains below emergency thresholds. Continue regular SOC monitoring.`
+      );
+    }
+
+    return (
+      `### 🚨 Critical Security Alerts (${criticalAlerts.length} Recorded)\n\n` +
+      `The following alerts are classified with **CRITICAL** severity in system telemetry:\n\n` +
+      formatAlertList(criticalAlerts.slice(0, 6)) +
+      (criticalAlerts.length > 6 ? `\n\n*... and ${criticalAlerts.length - 6} additional critical alerts in database.*` : '') +
+      `\n\n#### Immediate SOC Response Checklist:\n` +
+      `1. **Acknowledge Alerts**: Open the **Alerts** module and assign these records for active triage.\n` +
+      `2. **Examine Indicators**: Check for brute-force login attempts, SQL injection payloads, or unusual network traffic spikes.\n` +
+      `3. **Containment**: Isolate affected endpoints or revoke compromised API sessions.`
     );
   }
 

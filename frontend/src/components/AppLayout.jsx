@@ -78,6 +78,18 @@ const adminMenuItems = [
     ),
   },
   {
+    label: 'Registration Requests',
+    path: '/registration-requests',
+    adminOnly: true,
+    icon: (
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="8.5" cy="7" r="4" />
+        <polyline points="17 11 19 13 23 9" />
+      </svg>
+    ),
+  },
+  {
     label: 'Settings',
     path: '/settings',
     icon: (
@@ -263,7 +275,9 @@ export default function AppLayout() {
             {/* 3. Navigation Section */}
             <div className="aeux-nav-section">
               <nav className="aeux-nav-list">
-                {adminMenuItems.map((item) => {
+                {adminMenuItems
+                  .filter((item) => !item.adminOnly || user?.role === 'admin')
+                  .map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
                     <button
@@ -399,6 +413,22 @@ export default function AppLayout() {
                       </svg>
                       Settings & Profile
                     </button>
+                    {user?.role === 'admin' && (
+                      <button
+                        className="aeux-dropdown-item"
+                        onClick={() => {
+                          setProfileDropdownOpen(false);
+                          navigate('/registration-requests');
+                        }}
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                          <circle cx="8.5" cy="7" r="4" />
+                          <polyline points="17 11 19 13 23 9" />
+                        </svg>
+                        Registration Requests
+                      </button>
+                    )}
                     <button
                       className="aeux-dropdown-item"
                       onClick={() => {

@@ -30,6 +30,8 @@ export const createTestUser = async (overrides = {}) => {
     name: 'Test User',
     email: 'test@example.com',
     password: 'password123',
+    role: 'admin',
+    status: 'approved',
     ...overrides,
   };
   const user = await User.create(userData);

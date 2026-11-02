@@ -14,6 +14,7 @@ import Settings from './pages/Settings';
 import WebsiteScanner from './pages/WebsiteScanner';
 import ReportIncident from './pages/ReportIncident';
 import LandingPage from './pages/LandingPage';
+import RegistrationRequests from './pages/RegistrationRequests';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/registration-requests" element={<RegistrationRequests />} />
               <Route path="/profile" element={<Navigate to="/settings" replace />} />
             </Route>
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

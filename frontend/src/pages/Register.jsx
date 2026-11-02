@@ -13,6 +13,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(true);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const { register, user } = useAuth();
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
 
     if (!name.trim()) {
       setError('Please provide your full name.');
@@ -50,8 +52,12 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await register(name.trim(), email.trim(), password);
-      navigate('/dashboard');
+      const res = await register(name.trim(), email.trim(), password);
+      setSuccessMessage(res?.message || 'Registration submitted. Waiting for administrator approval.');
+      setName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please check your details and try again.');
     } finally {
@@ -194,6 +200,36 @@ const Register = () => {
                   <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
                 <span>{error}</span>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="auth-success-alert" role="status" style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '12px',
+                padding: '14px 16px',
+                background: 'rgba(0, 214, 143, 0.12)',
+                border: '1px solid #00d68f',
+                borderRadius: '10px',
+                color: '#044e39',
+                marginBottom: '20px',
+                fontSize: '13.5px',
+                lineHeight: '1.5',
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00a86b" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                <div>
+                  <strong style={{ display: 'block', color: '#00875a', marginBottom: '4px' }}>Registration Submitted</strong>
+                  <span>{successMessage}</span>
+                  <div style={{ marginTop: '8px' }}>
+                    <Link to="/login" style={{ color: '#00875a', fontWeight: '600', textDecoration: 'underline' }}>
+                      Return to Sign In &rarr;
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
 
